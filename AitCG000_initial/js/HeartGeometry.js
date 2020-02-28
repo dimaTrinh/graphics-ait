@@ -10,7 +10,7 @@ class HeartGeometry {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     let vertexTemp = [];
     vertexTemp.push(0,0,0);
-    for (let phi = 0; phi <= 2*Math.PI; phi+=Math.PI/100){
+    for (let phi = 0; phi <= 2*Math.PI; phi+=Math.PI/50){
       vertexTemp.push((0.16*Math.pow(Math.sin(phi),3)), (0.13*Math.cos(phi)-0.05*Math.cos(2*phi)-0.02*Math.cos(3*phi)-0.01*Math.cos(4*phi)),0);
     }
     let vertexPos = new Float32Array(vertexTemp);

@@ -12,6 +12,12 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 		float stripeWidth;
 	} stripedObject;
 
+  uniform struct{
+    vec3 stripeColor1;
+    vec3 stripeColor2;
+    float stripeWidth;
+  } material;
+
   uniform struct {
     float timeNow;
   } hypnoObject;
@@ -29,7 +35,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   //Helps decide which color to use for the stripe according to the position of the object
   bool estimateColor(vec4 position){
-    if (fract(position.x/estimateWidth(hypnoObject.timeNow)-position.y/estimateWidth(hypnoObject.timeNow)) < 0.5){
+    if (fract((position.x/estimateWidth(hypnoObject.timeNow)-position.y/estimateWidth(hypnoObject.timeNow))*5.0) < 0.5){
       return true;
     } 
     else
@@ -38,10 +44,10 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   void main(void) {
     if (estimateColor(worldPosition)){
-      fragmentColor.xyz = stripedObject.stripeColor1;
+      fragmentColor.xyz = material.stripeColor1;
     }
     else{
-      fragmentColor.xyz = stripedObject.stripeColor2;
+      fragmentColor.xyz = material.stripeColor2;
     }
 
   fragmentColor.w = 1.0;

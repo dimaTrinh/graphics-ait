@@ -16,7 +16,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
    		worldPosition = gl_Position;
 
    		gl_Position = vertexPosition*gameObject.modelMatrix;
-	  	// gl_Position.x += gameObject.position.x + 0.02*cos((gameObject.time - float(gl_VertexID))*4.0);
-  		// gl_Position.y += gameObject.position.y + 0.02*sin((gameObject.time - float(gl_VertexID))*4.0);
+	  	gl_Position.x += 0.01*sin(gameObject.time*10.0 + float(gl_VertexID));
+  		gl_Position.y += 0.01*sin(gameObject.time*10.0 + float(gl_VertexID));
 	}
 `;

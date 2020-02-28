@@ -1,7 +1,8 @@
 "use strict";
 /* exported Porgram */
-class Program {
+class Program extends UniformProvider{
   constructor(gl, vertexShader, fragmentShader) {
+    super("program");
     this.gl = gl;
     this.sourceFileNames = {vs:vertexShader.sourceFileName, fs:fragmentShader.sourceFileName};
     this.glProgram = gl.createProgram();
@@ -16,5 +17,10 @@ class Program {
       throw new Error(`Could not link shaders [vertex shader: ${vertexShader.sourceFileName}]:[fragment shader: ${fragmentShader.sourceFileName}
        ${gl.getProgramInfoLog(this.glProgram)}`);
     }
+
+    this.addComponentsAndGatherUniforms(
+      new ProgramReflection(gl, this.glProgram)
+      );
+
   }
 }
