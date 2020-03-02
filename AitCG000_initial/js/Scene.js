@@ -138,8 +138,18 @@ class Scene {
     // modelMatrix2.scale(this.avatarScale);
     // modelMatrix2.translate(this.avatarPosition2);
     // modelMatrix2.commit(gl, modelMatrixHandle);
- 
-    //Goes into FS, helps make the hypno effect
+
+    this.gameObject1.scale.set(this.avatarScale);
+    this.gameObject1.position.set(this.avatarPosition);
+
+    this.gameObject2.scale.set(this.avatarScale);
+    this.gameObject2.position.set(this.avatarPosition2);
+
+    for (const gameObject of this.gameObjects){
+      gameObject.update();
+    }
+
+     //Goes into FS, helps make the hypno effect
     const timeHandle1 = gl.getUniformLocation(this.stripedProgram.glProgram,"hypnoObject.timeNow");
     if(timeHandle1 === null) {
       console.log("Could not find uniform: timeHandle1"); 
@@ -155,20 +165,10 @@ class Scene {
       gl.uniform1f(timeHandle2, timeNow); 
     } 
 
-    this.gameObject1.scale.set(this.avatarScale);
-    this.gameObject1.position.set(this.avatarPosition);
-
-    this.gameObject2.scale.set(this.avatarScale);
-    this.gameObject2.position.set(this.avatarPosition2);
-
-    for (const gameObject of this.gameObjects){
-      gameObject.update();
-    }
-
     for (const gameObject of this.gameObjects){
       gameObject.draw();
     }
-    
+
    //  // Helps make the object wrap around the screen
    //  if(Math.abs(this.avatarPosition.x) > 1){
    //    if (this.avatarPosition.x > 1){

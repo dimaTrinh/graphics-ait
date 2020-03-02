@@ -7,12 +7,6 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
   out vec4 fragmentColor;
 
   uniform struct{
-		vec3 stripeColor1;
-    vec3 stripeColor2;
-		float stripeWidth;
-	} stripedObject;
-
-  uniform struct{
     vec3 stripeColor1;
     vec3 stripeColor2;
     float stripeWidth;
