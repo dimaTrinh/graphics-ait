@@ -48,11 +48,16 @@ class App{
     document.onkeydown = (event) => {
       //jshint unused:false
       this.keysPressed[keyNames[event.keyCode]] = true;
+
+      //Switch between object
       if (keyNames[event.keyCode] === "Q"){
+        this.objectCount = this.scene.gameObjects.length;
         this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
         this.scene.selectedGameObjects.pop();
         this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
       }
+
+      //Controlling selected object's position
       const step = 0.03;
       if (keyNames[event.keyCode] === "UP"){
         this.scene.gameObjects[this.currentObjectIndex].position.add(new Vec3(0.0, step,0.0));
@@ -65,6 +70,33 @@ class App{
       }
       else if(keyNames[event.keyCode] === "RIGHT"){
         this.scene.gameObjects[this.currentObjectIndex].position.add(new Vec3(step, 0.0,0.0));
+      }
+
+      //Rotating selected object
+      const angleRotation = 0.2;
+      if (keyNames[event.keyCode] === "A"){
+        this.scene.gameObjects[this.currentObjectIndex].orientation += angleRotation;
+      }
+      else if(keyNames[event.keyCode] === "D"){
+        this.scene.gameObjects[this.currentObjectIndex].orientation -= angleRotation;
+      }
+      if (keyNames[event.keyCode] === "DELETE"){
+        this.scene.gameObjects.splice(this.currentObjectIndex, 1);
+        this.objectCount = this.scene.gameObjects.length;
+        this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
+        this.scene.selectedGameObjects.pop();
+        this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+      }
+
+      //Change zoom of camera
+      const zoomFactor = 0.05;
+      if (keyNames[event.keyCode] === "Z"){
+        this.scene.camera.scale -= zoomFactor;
+        this.scene.camera.update();
+      }
+      else if(keyNames[event.keyCode] === "X"){
+        this.scene.camera.scale += zoomFactor;
+        this.scene.camera.update();
       }
     };
 
@@ -115,7 +147,7 @@ class App{
     //   this.currentFontSize++;
     // }
     // this.overlay.innerHTML = `<div style= "position:absolute;left:${this.textLeft}px;bottom:-${this.textBottom}px"> <font size="${this.currentFontSize}px">Hello AIT! </font></div>`;
-    //this.overlay.innerHTML = `<div style= "position:absolute;left:${this.textLeft}px;bottom:-${this.textBottom}px"> ${JSON.stringify(this.keysPressed)} </div>`;
+    this.overlay.innerHTML = `<div style= "position:absolute;left:${this.textLeft}px;bottom:-${this.textBottom}px"> ${JSON.stringify(this.keysPressed)} </div>`;
   }
 }
 

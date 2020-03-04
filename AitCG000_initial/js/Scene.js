@@ -94,9 +94,9 @@ class Scene extends UniformProvider{
       gameObject.update();
     }
 
-    for (const gameObject of this.gameObjects){
-      gameObject.move();
-    }
+    // for (const gameObject of this.gameObjects){
+    //   gameObject.move();
+    // }
 
     for (const gameObject of this.gameObjects){
       gameObject.draw(this, this.camera);
