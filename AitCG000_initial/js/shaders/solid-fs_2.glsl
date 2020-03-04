@@ -13,8 +13,8 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
   } material;
 
   uniform struct {
-    float timeNow;
-  } hypnoObject;
+    float time;
+  } scene;
 
 
   //Adjusts the width of the stripe according to Time -> helps make the hypno effect
@@ -29,7 +29,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   //Helps decide which color to use for the stripe according to the position of the object
   bool estimateColor(vec4 position){
-    if (fract((position.x/estimateWidth(hypnoObject.timeNow)-position.y/estimateWidth(hypnoObject.timeNow))*5.0) < 0.5){
+    if (fract((position.x/estimateWidth(scene.time)-position.y/estimateWidth(scene.time))*5.0) < 0.5){
       return true;
     } 
     else

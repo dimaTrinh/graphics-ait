@@ -1,5 +1,15 @@
 "use strict";
 /* exported App */
+
+function calcDist(u, v){
+  return Math.sqrt(Math.abs(u.x-v.x)**2 + Math.abs(u.y-v.y)**2 + Math.abs(u.z-v.z)**2);
+}
+
+function normalizeLoc(canvas, event){
+  let newLoc = {};
+  newLoc.x = event.x/(canvas.width)-canvas.width;
+}
+
 class App{
   constructor(canvas, overlay) {
     this.canvas = canvas;
@@ -11,12 +21,17 @@ class App{
       throw new Error("Browser does not support WebGL2");
     }
 
-    this.mouseLocation = {x: 0, y: 0};
     this.keysPressed = {};
 
     this.gl.pendingResources = {};
 
     this.scene = new Scene(this.gl);
+
+    this.currentObjectIndex = 0;
+
+    this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+
+    this.objectCount = this.scene.gameObjects.length;
 
     this.resize();
 
@@ -33,16 +48,34 @@ class App{
     document.onkeydown = (event) => {
       //jshint unused:false
       this.keysPressed[keyNames[event.keyCode]] = true;
+      if (keyNames[event.keyCode] === "Q"){
+        this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
+        this.scene.selectedGameObjects.pop();
+        this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+      }
+      const step = 0.03;
+      if (keyNames[event.keyCode] === "UP"){
+        this.scene.gameObjects[this.currentObjectIndex].position.add(new Vec3(0.0, step,0.0));
+      }
+      else if(keyNames[event.keyCode] === "DOWN"){
+        this.scene.gameObjects[this.currentObjectIndex].position.add(new Vec3(0.0, -step,0.0));
+      }
+      else if(keyNames[event.keyCode] === "LEFT"){
+        this.scene.gameObjects[this.currentObjectIndex].position.add(new Vec3(-step, 0.0,0.0));
+      }
+      else if(keyNames[event.keyCode] === "RIGHT"){
+        this.scene.gameObjects[this.currentObjectIndex].position.add(new Vec3(step, 0.0,0.0));
+      }
     };
+
     document.onkeyup = (event) => {
       //jshint unused:false
       this.keysPressed[keyNames[event.keyCode]] = false;
     };
     this.canvas.onmousedown = (event) => {
-      //jshint unused:false
-      this.mouseLocation.x = event.x;
-      this.mouseLocation.y = event.y;
+      //jshint unused:falses
     };
+
     this.canvas.onmousemove = (event) => {
       //jshint unused:false
       event.stopPropagation();
