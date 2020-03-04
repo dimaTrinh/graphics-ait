@@ -1,13 +1,5 @@
 "use strict";
 /* exported Scene */
-function getRandomIntInclusive(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
-}
-
 function calcDist(u, v){
   return Math.sqrt(Math.abs(u.x-v.x)**2 + Math.abs(u.y-v.y)**2 + Math.abs(u.z-v.z)**2);
 }
@@ -63,18 +55,13 @@ class Scene {
     this.avatarScale = new Vec3(2.0, 2.0, 1.0);
 
     this.avatarRotation = 0;
-    this.angleRotation = 0;
-
-    this.avatarRadius = 0.18;
-    this.objectRadius = 0.15;
-    this.gameEnded = false;
   }
 
   resize(gl, canvas) {
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
 
-  update(gl, keysPressed) {
+  update(gl, keysPressed, mouseLoc) {
     //jshint bitwise:false
     //jshint unused:false
 
@@ -186,15 +173,5 @@ class Scene {
    //      this.avatarPosition.y = 1.0;
    //    }
    //  }
-
-    // //Collision detections
-    // if ((calcDist(this.objectPosition1,this.avatarPosition) <= (this.objectRadius+this.objectRadius))
-    //   || (calcDist(this.objectPosition2,this.avatarPosition) <= (this.objectRadius+this.objectRadius))
-    //   || (calcDist(this.objectPosition3,this.avatarPosition) <= (this.objectRadius+this.objectRadius))){
-    //   //stop the objects from moving
-    //   this.avatarVelocity = new Vec3(0.0,0.0,0.0);
-    //   this.objectVelocity = new Vec3(0.0,0.0,0.0);
-    //   this.gameEnded = true;
-    // }
   }
 }

@@ -11,11 +11,8 @@ class App{
       throw new Error("Browser does not support WebGL2");
     }
 
-    //For in class example
-    this.textLeft = 0;
-    this.textBottom = 50;
+    this.mouseLocation = {x: 0, y: 0};
     this.keysPressed = {};
-    // this.currentFontSize = 8;
 
     this.gl.pendingResources = {};
 
@@ -43,8 +40,8 @@ class App{
     };
     this.canvas.onmousedown = (event) => {
       //jshint unused:false
-      // this.textLeft = event.x;
-      // this.textBottom = event.y;
+      this.mouseLocation.x = event.x;
+      this.mouseLocation.y = event.y;
     };
     this.canvas.onmousemove = (event) => {
       //jshint unused:false
@@ -64,7 +61,7 @@ class App{
   update() {
     const pendingResourceNames = Object.keys(this.gl.pendingResources);
     if (pendingResourceNames.length === 0) {
-      this.scene.update(this.gl, this.keysPressed);
+      this.scene.update(this.gl, this.keysPressed, this.mouseLocation);
       this.overlay.innerHTML = "Ready.";
     } else {
       this.overlay.innerHTML =
@@ -74,9 +71,9 @@ class App{
     // refresh
     window.requestAnimationFrame( () => this.update() );
 
-    if (this.scene.gameEnded === true){
-      this.overlay.innerHTML = `<div style= "position:absolute;left:${this.textLeft}px;bottom:-${this.textBottom}px"> GAME OVER </div>`;
-    }
+    // if (this.scene.gameEnded === true){
+    //   this.overlay.innerHTML = `<div style= "position:absolute;left:${this.textLeft}px;bottom:-${this.textBottom}px"> GAME OVER </div>`;
+    // }
     // //For in class example
     // if (this.keysPressed["T"] === true){
     //   this.currentFontSize--;
