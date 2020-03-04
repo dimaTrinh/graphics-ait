@@ -11,7 +11,7 @@ class Program extends UniformProvider{
 
     gl.bindAttribLocation(this.glProgram, 0, 'vertexPosition');
     gl.bindAttribLocation(this.glProgram, 1, 'vertexColor');   
-
+  
     gl.linkProgram(this.glProgram);
     if (!gl.getProgramParameter(this.glProgram, gl.LINK_STATUS)) {
       throw new Error(`Could not link shaders [vertex shader: ${vertexShader.sourceFileName}]:[fragment shader: ${fragmentShader.sourceFileName}
