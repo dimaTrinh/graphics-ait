@@ -19,8 +19,4 @@ class GameObject extends UniformProvider {
   	this.modelMatrix.rotate(this.orientation);
   	this.modelMatrix.translate(this.position);
   }
-
-  move(){
-    return;
-  }
 }

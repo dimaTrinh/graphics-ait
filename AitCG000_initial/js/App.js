@@ -5,10 +5,6 @@ function calcDist(u, v){
   return Math.sqrt(Math.abs(u.x-v.x)**2 + Math.abs(u.y-v.y)**2 + Math.abs(u.z-v.z)**2);
 }
 
-function normalizeLoc(canvas, event){
-  let newLoc = {};
-  newLoc.x = event.x/(canvas.width)-canvas.width;
-}
 
 class App{
   constructor(canvas, overlay) {
@@ -106,6 +102,8 @@ class App{
     };
     this.canvas.onmousedown = (event) => {
       //jshint unused:falses
+      let mouseLoc = new Vec2((event.x/this.canvas.clientWidth-0.5)*2.0, (event.y/this.canvas.clientHeight*-1-0.5)*2.0);
+      console.log(mouseLoc.x, mouseLoc.y);
     };
 
     this.canvas.onmousemove = (event) => {
