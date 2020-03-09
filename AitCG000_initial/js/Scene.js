@@ -41,9 +41,10 @@ class Scene extends UniformProvider{
     this.yellowHeart = new Mesh(this.yellowMaterial, this.heartGeometry);
     this.texturedQuad = new Mesh(this.texturedMaterial, this.texturedQuadGeometry);
 
-    this.avatarPosition = new Vec3(0.0,0.0,0.0);
+    this.avatarPosition = new Vec3(-0.5, 1, 0);
     this.avatarPosition2 = new Vec3(0.5, 0.5,0.0);
     this.avatarPosition3 = new Vec3(0.5, -0.5, 0.0);
+    this.avatarPosition4 = new Vec3(-0.3, -1, 0.0);
 
     this.avatarScale = new Vec3(2.0, 2.0, 1.0);
     this.objectScale = new Vec3(0.25, 0.25, 1.0);
@@ -66,6 +67,8 @@ class Scene extends UniformProvider{
     this.gameObject3.position.set(this.avatarPosition3);
 
     this.gameObject4.scale.set(this.objectScale);
+    this.gameObject4.orientation = 0.8;
+    this.gameObject4.position.set(this.avatarPosition4);
 
     this.gameObjects.push(this.gameObject1);
     this.gameObjects.push(this.gameObject2);

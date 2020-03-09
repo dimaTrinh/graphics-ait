@@ -6,7 +6,7 @@ class OrthoCamera extends UniformProvider {
     this.position = new Vec2(0.25, 0); 
     this.rotation = 0.3; 
     this.windowSize = new Vec2(2, 2); 
-    this.scale = 0.5;
+    this.scale = 1.3;
     
     this.addComponentsAndGatherUniforms(...programs);
 	}
@@ -18,7 +18,6 @@ class OrthoCamera extends UniformProvider {
 	      rotate(this.rotation). 
 	      translate(this.position). 
 	      invert(); 
-	    console.log(this.scale);
  	}
 
 	setAspectRatio(ar) { 

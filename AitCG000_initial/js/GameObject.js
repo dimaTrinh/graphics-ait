@@ -7,7 +7,7 @@ class GameObject extends UniformProvider {
     this.position = new Vec3(0, 0, 0); 
     this.orientation = 0; 
     this.scale = new Vec3(1, 1, 1); 
-    this.selected = false;
+    this.radius = 0.2;
  	
     this.addComponentsAndGatherUniforms(mesh);
   } 
