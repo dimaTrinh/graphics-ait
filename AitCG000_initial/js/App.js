@@ -27,8 +27,6 @@ class App{
 
     this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
 
-    this.objectCount = this.scene.gameObjects.length;
-
     this.pressingNew = false;
 
     this.resize();
@@ -48,11 +46,10 @@ class App{
       this.keysPressed[keyNames[event.keyCode]] = true;
 
       //Switch between object
-      if (this.objectCount !== 0){
+      if (this.scene.gameObjects.length !== 0){
         if (keyNames[event.keyCode] === "Q"){
-          this.objectCount = this.scene.gameObjects.length;
           this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(this.scene.gameObjects[this.currentObjectIndex]));
-          this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
+          this.currentObjectIndex = (this.currentObjectIndex+1)%this.scene.gameObjects.length;
           if (!this.scene.selectedGameObjects.includes(this.scene.gameObjects[this.currentObjectIndex])){
             this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
           }
@@ -60,7 +57,7 @@ class App{
       }
 
       //Controlling selected object's position
-      if (this.objectCount !== 0){
+      if (this.scene.gameObjects.length !== 0){
         const step = 0.03;
         if (keyNames[event.keyCode] === "UP"){
           for (const gameObject of this.scene.selectedGameObjects){
@@ -85,7 +82,7 @@ class App{
       }
 
       //Rotating selected object
-      if (this.objectCount !== 0){
+      if (this.scene.gameObjects.length !== 0){
         const angleRotation = 0.2;
         if (keyNames[event.keyCode] === "A"){
           for (const gameObject of this.scene.selectedGameObjects){
@@ -106,8 +103,7 @@ class App{
           let temp = this.scene.selectedGameObjects[iter];
           this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(temp), 1);
           this.scene.gameObjects.splice(this.scene.gameObjects.indexOf(temp), 1);
-          this.objectCount = this.scene.gameObjects.length;
-          this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
+          this.currentObjectIndex = (this.currentObjectIndex+1)%this.scene.gameObjects.length;
         }
         if (this.scene.gameObjects.length === 0){
           this.currentObjectIndex = 0;
@@ -131,7 +127,6 @@ class App{
           newObject.scale.set(new Vec3(2, 2, 1));
           this.scene.gameObjects.push(newObject);
           this.pressingNew = true;
-          this.scene.objectCount +=1;
         }
       }
 
@@ -185,7 +180,6 @@ class App{
 
       //No object was selected
       if (!anySelection){
-        console.log("Unselect all objects")
         for (const gameObject of this.scene.gameObjects){
           this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(gameObject), 1);
         }

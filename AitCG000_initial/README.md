@@ -14,5 +14,6 @@ Completed Features:
 	Working on Scroll: The visible window is moved by pressing "I", "J", "K" and "L".
 6. Combo:
 	Camera & mouse: Mouse operations work even when the camera settings have changed 
-	Working on Camera & creation: If a mouse click happens outside of any object, a new object is created
-
+	??Working on Camera & creation: If a mouse click happens outside of any object, a new object is created
+7. Hard Ones:
+	
