@@ -8,7 +8,7 @@ Completed Features:
 	Key rorate (Using the key "A" to turn left, using the key "D" to turn right)
 4. Editing: 
 	Add New: New object is created at the origin when "N" is pressed
-	Working on Delete: Selected object is removed if "DEL" is pressed
+	Delete: Selected object is removed if "DEL" is pressed
 5. View: 
 	Zoom: "Z" should zoom in, "X" zoom out
 	Working on Scroll: The visible window is moved by pressing "I", "J", "K" and "L".

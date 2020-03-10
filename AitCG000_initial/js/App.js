@@ -48,66 +48,70 @@ class App{
       this.keysPressed[keyNames[event.keyCode]] = true;
 
       //Switch between object
-      if (keyNames[event.keyCode] === "Q"){
-        this.objectCount = this.scene.gameObjects.length;
-        this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(this.scene.gameObjects[this.currentObjectIndex]));
-        this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
-        if (!this.scene.selectedGameObjects.includes(this.scene.gameObjects[this.currentObjectIndex])){
-          this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+      if (this.objectCount !== 0){
+        if (keyNames[event.keyCode] === "Q"){
+          this.objectCount = this.scene.gameObjects.length;
+          this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(this.scene.gameObjects[this.currentObjectIndex]));
+          this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
+          if (!this.scene.selectedGameObjects.includes(this.scene.gameObjects[this.currentObjectIndex])){
+            this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+          }
         }
       }
 
       //Controlling selected object's position
-      const step = 0.03;
-      if (keyNames[event.keyCode] === "UP"){
-        for (const gameObject of this.scene.selectedGameObjects){
-          gameObject.position.add(new Vec3(0.0, step,0.0));
+      if (this.objectCount !== 0){
+        const step = 0.03;
+        if (keyNames[event.keyCode] === "UP"){
+          for (const gameObject of this.scene.selectedGameObjects){
+            gameObject.position.add(new Vec3(0.0, step,0.0));
+          }
         }
-      }
-      else if(keyNames[event.keyCode] === "DOWN"){
-        for (const gameObject of this.scene.selectedGameObjects){
-          gameObject.position.add(new Vec3(0.0, -step,0.0));
+        else if(keyNames[event.keyCode] === "DOWN"){
+          for (const gameObject of this.scene.selectedGameObjects){
+            gameObject.position.add(new Vec3(0.0, -step,0.0));
+          }
         }
-      }
-      else if(keyNames[event.keyCode] === "LEFT"){
-        for (const gameObject of this.scene.selectedGameObjects){
-          gameObject.position.add(new Vec3(-step, 0.0,0.0));
+        else if(keyNames[event.keyCode] === "LEFT"){
+          for (const gameObject of this.scene.selectedGameObjects){
+            gameObject.position.add(new Vec3(-step, 0.0,0.0));
+          }
         }
-      }
-      else if(keyNames[event.keyCode] === "RIGHT"){
-        for (const gameObject of this.scene.selectedGameObjects){
-          gameObject.position.add(new Vec3(step, 0.0,0.0));
+        else if(keyNames[event.keyCode] === "RIGHT"){
+          for (const gameObject of this.scene.selectedGameObjects){
+            gameObject.position.add(new Vec3(step, 0.0,0.0));
+          }
         }
       }
 
       //Rotating selected object
-      const angleRotation = 0.2;
-      if (keyNames[event.keyCode] === "A"){
-        for (const gameObject of this.scene.selectedGameObjects){
-          gameObject.orientation += angleRotation;
+      if (this.objectCount !== 0){
+        const angleRotation = 0.2;
+        if (keyNames[event.keyCode] === "A"){
+          for (const gameObject of this.scene.selectedGameObjects){
+            gameObject.orientation += angleRotation;
+          }
+          this.scene.gameObjects[this.currentObjectIndex].orientation += angleRotation;
         }
-        this.scene.gameObjects[this.currentObjectIndex].orientation += angleRotation;
-      }
-      else if(keyNames[event.keyCode] === "D"){
-        for (const gameObject of this.scene.selectedGameObjects){
-          gameObject.orientation -= angleRotation;
+        else if(keyNames[event.keyCode] === "D"){
+          for (const gameObject of this.scene.selectedGameObjects){
+            gameObject.orientation -= angleRotation;
+          }
         }
       }
+
       if (keyNames[event.keyCode] === "DELETE"){
-        for (const gameObject of this.scene.selectedGameObjects){
-          let temp = gameObject;
+        let iter = 0;
+        while (this.scene.selectedGameObjects.length !== 0){
+          let temp = this.scene.selectedGameObjects[iter];
           this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(temp), 1);
           this.scene.gameObjects.splice(this.scene.gameObjects.indexOf(temp), 1);
-          //this.objectCount = this.scene.gameObjects.length;
-          //this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
+          this.objectCount = this.scene.gameObjects.length;
+          this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
         }
-        //this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
-
-        // this.scene.gameObjects.splice(this.currentObjectIndex, 1);
-        // this.objectCount = this.scene.gameObjects.length;
-        // this.currentObjectIndex = (this.currentObjectIndex+1)%this.objectCount;
-        // this.scene.selectedGameObjects.pop();
-        // this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+        if (this.scene.gameObjects.length === 0){
+          this.currentObjectIndex = 0;
+        }
       }
 
       //Change zoom of camera
@@ -127,13 +131,15 @@ class App{
           newObject.scale.set(new Vec3(2, 2, 1));
           this.scene.gameObjects.push(newObject);
           this.pressingNew = true;
+          this.scene.objectCount +=1;
         }
       }
 
       const cameraStep = 0.04;
       if (keyNames[event.keyCode] === "I"){
         let invertCameraMatrix = new Mat4(this.scene.camera.viewProjMatrix).invert();
-        this.scene.camera.position.add((new Vec3(0.0, cameraStep, 0.0)).xyz1mult(invertCameraMatrix));
+        //this.scene.camera.position.add((new Vec3(0.0, cameraStep, 0.0)).xyz1mult(invertCameraMatrix));
+        this.scene.camera.position.add(new Vec3(0.0, cameraStep, 0.0));
         this.scene.camera.update();
       }
       else if(keyNames[event.keyCode] === "J"){
