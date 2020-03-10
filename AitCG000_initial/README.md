@@ -1,7 +1,7 @@
 Completed Features:
 1. Selection: 
 	Tab pick: using the key "Q" to move to the next object
-	Mouse Pick: note that even if the user's click is not near any objects, the program will deselect every object except for the one marked by tab pick
+	Mouse Pick: note that even if the user's click is not near any objects, the program will deselect every object
 2. Position manipulation: 
 	Arrow Move (Using the Arrow keys)
 3. Orientation manipulation: 
@@ -11,9 +11,11 @@ Completed Features:
 	Delete: Selected object is removed if "DEL" is pressed
 5. View: 
 	Zoom: "Z" should zoom in, "X" zoom out
-	Working on Scroll: The visible window is moved by pressing "I", "J", "K" and "L".
+	Scroll: The visible window is moved by pressing "I", "J", "K" and "L".
 6. Combo:
 	Camera & mouse: Mouse operations work even when the camera settings have changed 
-	??Working on Camera & creation: If a mouse click happens outside of any object, a new object is created
+	Camera & creation: The new object is placed world space position that is at the middle of the canvas with the current camera settings
 7. Hard Ones:
+	Parent
+
 	

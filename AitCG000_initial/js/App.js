@@ -25,7 +25,7 @@ class App{
 
     this.currentObjectIndex = 0;
 
-    this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+    //this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
 
     this.pressingNew = false;
 
@@ -97,16 +97,19 @@ class App{
         }
       }
 
-      if (keyNames[event.keyCode] === "DELETE"){
-        let iter = 0;
-        while (this.scene.selectedGameObjects.length !== 0){
-          let temp = this.scene.selectedGameObjects[iter];
-          this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(temp), 1);
-          this.scene.gameObjects.splice(this.scene.gameObjects.indexOf(temp), 1);
-          this.currentObjectIndex = (this.currentObjectIndex+1)%this.scene.gameObjects.length;
-        }
-        if (this.scene.gameObjects.length === 0){
-          this.currentObjectIndex = 0;
+      //Delete selected objects
+      if (this.scene.gameObjects.length !== 0){
+        if (keyNames[event.keyCode] === "DELETE"){
+          let iter = 0;
+          while (this.scene.selectedGameObjects.length !== 0){
+            let temp = this.scene.selectedGameObjects[iter];
+            this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(temp), 1);
+            this.scene.gameObjects.splice(this.scene.gameObjects.indexOf(temp), 1);
+            this.currentObjectIndex = (this.currentObjectIndex+1)%this.scene.gameObjects.length;
+          }
+          if (this.scene.gameObjects.length === 0){
+            this.currentObjectIndex = 0;
+          }
         }
       }
 
@@ -121,32 +124,45 @@ class App{
         this.scene.camera.update();
       }
 
+      //Create new object at the center of canvas
       if (keyNames[event.keyCode] === "N"){
         if (this.pressingNew === false){
+          let invertCameraMatrix = new Mat4(this.scene.camera.viewProjMatrix).invert();
+          let centerCanvas = new Vec2(0,0);
+          let centerLoc = centerCanvas.xy01mul(invertCameraMatrix); //find where the location that is going to be shifted to the center of the canvas going to be
+          
           let newObject = new GameObject(this.scene.cyanHeart);
+          newObject.position.set(new Vec3(centerLoc.x, centerLoc.y, 0));
           newObject.scale.set(new Vec3(2, 2, 1));
           this.scene.gameObjects.push(newObject);
           this.pressingNew = true;
         }
       }
 
+      //Control camera movement
       const cameraStep = 0.04;
       if (keyNames[event.keyCode] === "I"){
         let invertCameraMatrix = new Mat4(this.scene.camera.viewProjMatrix).invert();
-        //this.scene.camera.position.add((new Vec3(0.0, cameraStep, 0.0)).xyz1mult(invertCameraMatrix));
-        this.scene.camera.position.add(new Vec3(0.0, cameraStep, 0.0));
+        let worldStep = (new Vec3(0.0, cameraStep, 0.0)).xyz0mul(invertCameraMatrix); //finding out how much to add in world position
+        this.scene.camera.position.add(worldStep);
         this.scene.camera.update();
       }
       else if(keyNames[event.keyCode] === "J"){
-        this.scene.camera.position.add(new Vec3(-cameraStep, 0.0, 0.0));
+        let invertCameraMatrix = new Mat4(this.scene.camera.viewProjMatrix).invert();
+        let worldStep = (new Vec3(-cameraStep,0.0, 0.0)).xyz0mul(invertCameraMatrix);
+        this.scene.camera.position.add(worldStep);
         this.scene.camera.update();
       }
       else if(keyNames[event.keyCode] === "K"){
-        this.scene.camera.position.add(new Vec3(0.0, -cameraStep, 0.0));
+        let invertCameraMatrix = new Mat4(this.scene.camera.viewProjMatrix).invert();
+        let worldStep = (new Vec3(0.0, -cameraStep, 0.0)).xyz0mul(invertCameraMatrix);
+        this.scene.camera.position.add(worldStep);
         this.scene.camera.update();
       }
       else if(keyNames[event.keyCode] === "L"){
-        this.scene.camera.position.add(new Vec3(cameraStep, 0.0, 0.0));
+        let invertCameraMatrix = new Mat4(this.scene.camera.viewProjMatrix).invert();
+        let worldStep = (new Vec3(cameraStep, 0.0, 0.0)).xyz0mul(invertCameraMatrix);
+        this.scene.camera.position.add(worldStep);
         this.scene.camera.update();
       }
     };
@@ -183,7 +199,7 @@ class App{
         for (const gameObject of this.scene.gameObjects){
           this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(gameObject), 1);
         }
-        this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);        
+        //this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);        
       }
     };
 
