@@ -9,10 +9,10 @@ class TexturedQuadGeometry {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,
       new Float32Array([
-       -2,-1,0.5,
-       2,-1,0.5,
-       2,1,0.5,
-       -2,1,0.5,
+       -2,-1,1,
+       2,-1,1,
+       2,1,1,
+       -2,1,1,
       ]),
       gl.STATIC_DRAW);
 
@@ -31,9 +31,9 @@ class TexturedQuadGeometry {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTexCoordBuffer); 
     gl.bufferData(gl.ARRAY_BUFFER, 
       new Float32Array([ 
-           0, 1, 
-           1, 1, 
-           1, 0, 
+           0, 9, 
+           9, 9, 
+           9, 0, 
            0, 0, 
       ]), 
       gl.STATIC_DRAW);

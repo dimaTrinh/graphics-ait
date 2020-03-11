@@ -4,6 +4,11 @@
 class Scene extends UniformProvider{
   constructor(gl) {
     super("scene");
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,
+      gl.ONE_MINUS_SRC_ALPHA);
+
     this.programs = [];
     this.vsIdle = new Shader(gl, gl.VERTEX_SHADER, "idle-vs.glsl");
     this.fsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "solid-fs_2.glsl");
@@ -26,9 +31,17 @@ class Scene extends UniformProvider{
     this.yellowMaterial.stripeWidth = 0.2;
 
     this.texturedMaterial = new Material(this.texturedProgram);
+    this.countryMaterial = new Material(this.texturedProgram);
+    this.polyMaterial = new Material(this.texturedProgram);
 
-    this.asteroidTexture = new Texture2D(gl, "media/asteroid.jpg");
-    this.texturedMaterial.colorTexture.set(this.asteroidTexture);
+    this.dinoTexture = new Texture2D(gl, "media/dinosaur.png");
+    this.texturedMaterial.colorTexture.set(this.dinoTexture);
+
+    this.countryTexture = new Texture2D(gl, "media/usa.jpg")
+    this.countryMaterial.colorTexture.set(this.countryTexture);
+
+    this.polyTexture = new Texture2D(gl, "media/polygon.jpg")
+    this.polyMaterial.colorTexture.set(this.polyTexture);
 
     this.triangleGeometry = new TriangleGeometry(gl);
     this.quadGeometry = new QuadGeometry(gl);
@@ -40,6 +53,8 @@ class Scene extends UniformProvider{
     this.cyanHeart = new Mesh(this.cyanMaterial, this.heartGeometry);
     this.yellowHeart = new Mesh(this.yellowMaterial, this.heartGeometry);
     this.texturedQuad = new Mesh(this.texturedMaterial, this.texturedQuadGeometry);
+    this.countryQuad = new Mesh(this.countryMaterial, this.texturedQuadGeometry);
+    this.polyQuad = new Mesh(this.polyMaterial, this.texturedQuadGeometry);
 
     this.avatarPosition = new Vec3(-0.5, 1, 0);
     this.avatarPosition2 = new Vec3(0.5, 0.5,0.0);
@@ -56,6 +71,7 @@ class Scene extends UniformProvider{
     this.gameObject2 = new GameObject(this.cyanHeart);
     this.gameObject3 = new GameObject(this.cyanHeart);
     this.gameObject4 = new GameObject(this.texturedQuad);
+    this.gameObject5 = new GameObject(this.polyQuad);
 
     this.gameObject1.scale.set(this.avatarScale);
     this.gameObject1.position.set(this.avatarPosition);
@@ -66,14 +82,18 @@ class Scene extends UniformProvider{
     this.gameObject3.scale.set(this.avatarScale);
     this.gameObject3.position.set(this.avatarPosition3);
 
-    this.gameObject4.scale.set(this.objectScale);
+    this.gameObject4.scale.set(new Vec3(0.5, 0.5, 1));
     this.gameObject4.orientation = 0.8;
     this.gameObject4.position.set(this.avatarPosition4);
+
+    this.gameObject5.position.set(new Vec3(2, 2, 1));
+    this.gameObject5.scale.set(new Vec3(10, 10, 1));
 
     this.gameObjects.push(this.gameObject1);
     this.gameObjects.push(this.gameObject2);
     this.gameObjects.push(this.gameObject3);
     this.gameObjects.push(this.gameObject4);
+    this.gameObjects.push(this.gameObject5);
 
     this.timeAtFirstFrame = new Date().getTime();
     this.timeAtLastFrame = this.timeAtFirstFrame;
@@ -99,7 +119,7 @@ class Scene extends UniformProvider{
     //jshint unused:false
 
     // clear the screen
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(0.9, 0.9, 0.8, 1.0);
     // gl.clearColor(Math.random(), Math.random(), Math.random(), 1.0);
     gl.clearDepth(1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -121,6 +141,8 @@ class Scene extends UniformProvider{
     for(const gameObject of this.selectedGameObjects) {
       gameObject.using(this.yellowMaterial).draw(this, this.camera);
     } 
+
+    this.gameObject4.orientation+=0.05;
 
    //  // Helps make the object wrap around the screen
    //  if(Math.abs(this.avatarPosition.x) > 1){

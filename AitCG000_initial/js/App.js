@@ -27,7 +27,6 @@ class App{
 
     //this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
     this.startingObject = null;
-    this.groupies = {};
 
     this.pressingNew = false;
 
@@ -51,11 +50,13 @@ class App{
       if (this.scene.gameObjects.length !== 0){
         if (keyNames[event.keyCode] === "Q"){
           this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(this.scene.gameObjects[this.currentObjectIndex]));
+          this.startingObject = null;
           this.currentObjectIndex = (this.currentObjectIndex+1)%this.scene.gameObjects.length;
           if (!this.scene.selectedGameObjects.includes(this.scene.gameObjects[this.currentObjectIndex])){
             this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
             if (!this.startingObject){
               this.startingObject = this.scene.gameObjects[this.currentObjectIndex];
+              console.log("New starting object");
             } 
           }
         }
@@ -93,7 +94,6 @@ class App{
           for (const gameObject of this.scene.selectedGameObjects){
             gameObject.orientation += angleRotation;
           }
-          this.scene.gameObjects[this.currentObjectIndex].orientation += angleRotation;
         }
         else if(keyNames[event.keyCode] === "D"){
           for (const gameObject of this.scene.selectedGameObjects){
@@ -121,38 +121,33 @@ class App{
       //Link objects together
       if (this.scene.gameObjects.length !== 0){
         if (keyNames[event.keyCode] === "Y"){
-          if (!(this.startingObject in this.groupies)){
-              this.groupies[this.startingObject] = []; 
-          }
-          for (const gameObject of this.scene.selectedGameObjects){
-            if ((gameObject !== this.startingObject) && !(this.groupies[this.startingObject].includes(gameObject))){
-              this.groupies[this.startingObject].push(gameObject);
+          if (this.startingObject){
+            for (const gameObject of this.scene.selectedGameObjects){
+              if (gameObject !== this.startingObject){
+                gameObject.parent = this.startingObject;
+              }
             }
-          }
-          console.log("Number of things in group " + this.groupies[this.startingObject].length);
-          let iter = 0;
-          for(var key in this.groupies) {
-            iter++;
-          } 
-          console.log("Number of groups " + iter);
+          }   
         }
       }
 
       //Unlink objects 
       if (this.scene.gameObjects.length !== 0){
         if (keyNames[event.keyCode] === "U"){
-          this.groupies = {};
+          for (const gameObject of this.scene.selectedGameObjects){
+              gameObject.parent = null;
+          }
         }
       }
 
       //Change zoom of camera
-      const zoomFactor = 0.05;
+      const zoomFactor = 0.1;
       if (keyNames[event.keyCode] === "Z"){
-        this.scene.camera.scale -= zoomFactor;
+        this.scene.camera.scale *= (1+zoomFactor);
         this.scene.camera.update();
       }
       else if(keyNames[event.keyCode] === "X"){
-        this.scene.camera.scale += zoomFactor;
+        this.scene.camera.scale *= (1-zoomFactor);
         this.scene.camera.update();
       }
 
@@ -223,6 +218,7 @@ class App{
            this.scene.selectedGameObjects.push(gameObject);
            if (!this.startingObject){
               this.startingObject = gameObject;
+              console.log("New starting object");
             } 
           }
           anySelection = true;
