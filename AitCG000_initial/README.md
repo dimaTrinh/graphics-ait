@@ -16,6 +16,6 @@ Completed Features:
 	Camera & mouse: Mouse operations work even when the camera settings have changed 
 	Camera & creation: The new object is placed world space position that is at the middle of the canvas with the current camera settings
 7. Hard Ones:
-	Parent
+	Working on Parent
 
 	

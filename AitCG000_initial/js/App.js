@@ -26,6 +26,8 @@ class App{
     this.currentObjectIndex = 0;
 
     //this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+    this.startingObject = null;
+    this.groupies = {};
 
     this.pressingNew = false;
 
@@ -52,6 +54,9 @@ class App{
           this.currentObjectIndex = (this.currentObjectIndex+1)%this.scene.gameObjects.length;
           if (!this.scene.selectedGameObjects.includes(this.scene.gameObjects[this.currentObjectIndex])){
             this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
+            if (!this.startingObject){
+              this.startingObject = this.scene.gameObjects[this.currentObjectIndex];
+            } 
           }
         }
       }
@@ -107,9 +112,36 @@ class App{
             this.scene.gameObjects.splice(this.scene.gameObjects.indexOf(temp), 1);
             this.currentObjectIndex = (this.currentObjectIndex+1)%this.scene.gameObjects.length;
           }
-          if (this.scene.gameObjects.length === 0){
+          if (this.scene.gameObjects.length === 0){ //no objects left, reset to 0
             this.currentObjectIndex = 0;
           }
+        }
+      }
+
+      //Link objects together
+      if (this.scene.gameObjects.length !== 0){
+        if (keyNames[event.keyCode] === "Y"){
+          if (!(this.startingObject in this.groupies)){
+              this.groupies[this.startingObject] = []; 
+          }
+          for (const gameObject of this.scene.selectedGameObjects){
+            if ((gameObject !== this.startingObject) && !(this.groupies[this.startingObject].includes(gameObject))){
+              this.groupies[this.startingObject].push(gameObject);
+            }
+          }
+          console.log("Number of things in group " + this.groupies[this.startingObject].length);
+          let iter = 0;
+          for(var key in this.groupies) {
+            iter++;
+          } 
+          console.log("Number of groups " + iter);
+        }
+      }
+
+      //Unlink objects 
+      if (this.scene.gameObjects.length !== 0){
+        if (keyNames[event.keyCode] === "U"){
+          this.groupies = {};
         }
       }
 
@@ -189,6 +221,9 @@ class App{
         if (calcDist(gameObject.position, mouseLocWorld) <= gameObject.radius){
           if (!this.scene.selectedGameObjects.includes(gameObject)){
            this.scene.selectedGameObjects.push(gameObject);
+           if (!this.startingObject){
+              this.startingObject = gameObject;
+            } 
           }
           anySelection = true;
         }
@@ -199,6 +234,7 @@ class App{
         for (const gameObject of this.scene.gameObjects){
           this.scene.selectedGameObjects.splice(this.scene.selectedGameObjects.indexOf(gameObject), 1);
         }
+        this.startingObject = null;
         //this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);        
       }
     };
