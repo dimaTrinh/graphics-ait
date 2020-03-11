@@ -213,6 +213,10 @@ class App{
       //Checking if the user clicked near the object
       let anySelection = false; //denote whether a click was detected any objects
       for (const gameObject of this.scene.gameObjects){
+        let temp = gameObject.position;
+        if (gameObject.parent){
+          temp.xyz1mul(gameObject.parent.modelMatrix);
+        }
         if (calcDist(gameObject.position, mouseLocWorld) <= gameObject.radius){
           if (!this.scene.selectedGameObjects.includes(gameObject)){
            this.scene.selectedGameObjects.push(gameObject);
