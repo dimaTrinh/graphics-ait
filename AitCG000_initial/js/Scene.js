@@ -142,7 +142,7 @@ class Scene extends UniformProvider{
       gameObject.using(this.yellowMaterial).draw(this, this.camera);
     } 
 
-    this.gameObject4.orientation+=0.05;
+    this.gameObject4.orientation+=0.0005;
 
    //  // Helps make the object wrap around the screen
    //  if(Math.abs(this.avatarPosition.x) > 1){

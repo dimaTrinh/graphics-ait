@@ -56,7 +56,6 @@ class App{
             this.scene.selectedGameObjects.push(this.scene.gameObjects[this.currentObjectIndex]);
             if (!this.startingObject){
               this.startingObject = this.scene.gameObjects[this.currentObjectIndex];
-              console.log("New starting object");
             } 
           }
         }
@@ -123,7 +122,7 @@ class App{
         if (keyNames[event.keyCode] === "Y"){
           if (this.startingObject){
             for (const gameObject of this.scene.selectedGameObjects){
-              if (gameObject !== this.startingObject){
+              if (gameObject !== this.startingObject && !gameObject.parent && gameObject !== this.startingObject.parent){
                 gameObject.parent = this.startingObject;
               }
             }
@@ -213,16 +212,16 @@ class App{
       //Checking if the user clicked near the object
       let anySelection = false; //denote whether a click was detected any objects
       for (const gameObject of this.scene.gameObjects){
-        let temp = gameObject.position;
+        let temp = new Vec3(gameObject.position);
         if (gameObject.parent){
+          gameObject.parent.update();
           temp.xyz1mul(gameObject.parent.modelMatrix);
         }
-        if (calcDist(gameObject.position, mouseLocWorld) <= gameObject.radius){
+        if (calcDist(temp, mouseLocWorld) <= gameObject.radius){
           if (!this.scene.selectedGameObjects.includes(gameObject)){
            this.scene.selectedGameObjects.push(gameObject);
            if (!this.startingObject){
               this.startingObject = gameObject;
-              console.log("New starting object");
             } 
           }
           anySelection = true;
