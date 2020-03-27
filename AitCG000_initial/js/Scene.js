@@ -93,7 +93,7 @@ class Scene extends UniformProvider{
     this.gameObjects.push(this.gameObject2);
     this.gameObjects.push(this.gameObject3);
     this.gameObjects.push(this.gameObject4);
-    this.gameObjects.push(this.gameObject5);
+    //this.gameObjects.push(this.gameObject5);
 
     this.timeAtFirstFrame = new Date().getTime();
     this.timeAtLastFrame = this.timeAtFirstFrame;
