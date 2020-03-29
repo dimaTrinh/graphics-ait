@@ -16,8 +16,8 @@ class GameObject extends UniformProvider {
     this.torque = 0;
     this.velocity = new Vec3();
     this.invMass = 1;
-    this.backDrag = 1;
-    this.sideDrag = 1;
+    this.backDrag = 0.2;
+    this.sideDrag = 0.2;
     this.invAngularMass = 1;
     this.angularVelocity = 0;
     this.angularDrag = 1;

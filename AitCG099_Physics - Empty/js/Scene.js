@@ -34,7 +34,22 @@ class Scene extends UniformProvider {
     this.asteroidMaterial.colorTexture.set(new Texture2D(gl, "media/asteroid.png"));
     this.asteroidMesh = new Mesh(this.asteroidMaterial, this.texturedQuadGeometry);
     const genericMove = function(t, dt){
-      // PRACTICAL TODO
+      const acceleration = new Vec3(this.force).mul(this.invMass);
+
+      this.velocity.addScaled(dt, acceleration);
+      const aheadVector = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation));
+      const aheadVelocity = aheadVector.times(aheadVector.dot(this.velocity));
+      const sideVelocity = this.velocity.minus(aheadVelocity);
+
+      this.velocity = new Vec3(0,0,0);
+      this.velocity.addScaled(Math.exp(-dt * this.backDrag * this.invMass), aheadVelocity);
+      this.velocity.addScaled(Math.exp(-dt * this.sideDrag * this.invMass), sideVelocity);
+      this.position.addScaled(dt, this.velocity);
+
+      this.angularAcceleration = this.torque * this.invAngularMass;
+      this.angularVelocity += this.angularAcceleration * dt; 
+      this.angularVelocity *= Math.exp(-dt * this.angularDrag * this.invAngularMass);
+      this.orientation += this.angularVelocity * dt;
     };
 
     for(let i=0; i < 64; i++){
@@ -44,14 +59,44 @@ class Scene extends UniformProvider {
       asteroid.angularVelocity = Math.random(-2, 2);
       this.gameObjects.push(asteroid);
       asteroid.move = genericMove;
+      asteroid.force = new Vec3(0, -1, 0);
+      //asteroid.invMass = 0.2;
+      asteroid.torque = 2;
+      //asteroid.invAngMass = 0.2;
     }
 
     this.avatar.backDrag = 0.9;
     this.avatar.sideDrag = 0.5;
     this.avatar.angularDrag = 0.5;
+    //this.avatar.velocity = new Vec3(0.1, 0.1, 0);
     this.avatar.control = function(t, dt, keysPressed, colliders){
-      // PRACTICAL TODO
+      this.aheadThrust = 0;
+      this.sideThrust = 0;
+
+      if(keysPressed["UP"]) {
+        this.aheadThrust += 2;
+      } 
+      if(keysPressed["DOWN"]){
+        this.aheadThrust -= 2;
+      }
+      this.sideThrust = 0;
+
+      this.torque = 0;
+      if(keysPressed["LEFT"]) {
+        this.sideThrust -= 2;
+        this.torque += 1;
+      } 
+      if(keysPressed["RIGHT"]){
+        this.sideThrust += 2;
+        this.torque -= 1;
+      }
+
+      const aheadVector = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation), 0);
+      const sideVector = new Vec3(Math.sin(this.orientation), -Math.cos(this.orientation), 0);
+
+      this.force = aheadVector.times(this.aheadThrust).plus(sideVector.times(this.sideThrust));
     };  
+
     this.avatar.move = genericMove;
 
     this.timeAtFirstFrame = new Date().getTime();
