@@ -6,19 +6,16 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   uniform struct {
     mat4 modelMatrix;
+    vec2 offset;
   } gameObject;
 
   uniform struct {
     mat4 viewProjMatrix;
   } camera;
 
-  uniform struct{
-    vec2 offset;
-  } scene;
-
   void main(void) {
     //offset x by 0.167, offset y by 0.18
-    texCoord = vec4(vertexTexCoord.x/5.8+0.167*float(scene.offset.x), vertexTexCoord.y/5.8+0.164*float(scene.offset.y), vertexTexCoord.z, vertexTexCoord.w);
+    texCoord = vec4(vertexTexCoord.x/5.8+0.167*float(gameObject.offset.x), vertexTexCoord.y/5.8+0.164*float(gameObject.offset.y), vertexTexCoord.z, vertexTexCoord.w);
     modelPosition = vertexPosition;
     gl_Position = vertexPosition * gameObject.modelMatrix * camera.viewProjMatrix;
   }

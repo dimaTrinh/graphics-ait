@@ -41,6 +41,7 @@ class Scene extends UniformProvider {
     this.explosionMaterial.colorTexture.set(new Texture2D(gl, "media/boom.png"));
 
     this.explodingObjects = [];
+    this.explodedObjects = [];
     this.offset = new Vec2(0.0, 0.0);
 
     const genericMove = function(t, dt){
@@ -231,23 +232,28 @@ class Scene extends UniformProvider {
       }
     }
 
-    if (this.offset.x < 5){
-      this.offset.x += 1;
-    }
-    else{
-      this.offset.x = 0;
-      if (this.offset.y < 5){
-        this.offset.y += 1;
+    for (const gameObject of this.explodingObjects){ //update phase for the exploding objects
+      if (gameObject.offset.x < 5){
+        gameObject.offset.x += 1;
       }
-      else{ //objects ran through the explosion sequence, remove them
-        while (this.explodingObjects.length !== 0){
-          let temp = this.explodingObjects[0];
-          this.explodingObjects.splice(this.explodingObjects.indexOf(temp), 1);
-          this.gameObjects.splice(this.gameObjects.indexOf(temp), 1);
+      else{
+        gameObject.offset.x = 0;
+        if (gameObject.offset.y < 5){
+          gameObject.offset.y += 1;
         }
-        this.offset.x = 0;
-        this.offset.y = 0;
+        else{ //object ran through the explosion sequence, added it to the list of objects to be removed
+          if (!this.explodedObjects.includes(gameObject)){
+            this.explodedObjects.push(gameObject);
+          }
+        }
       }
+    }
+
+    while (this.explodedObjects.length !== 0){
+      let temp = this.explodedObjects[0];
+      this.explodingObjects.splice(this.explodingObjects.indexOf(temp), 1);
+      this.explodedObjects.splice(this.explodedObjects.indexOf(temp), 1);
+      this.gameObjects.splice(this.gameObjects.indexOf(temp), 1);
     }
 
     for(const gameObject of this.gameObjects) {
