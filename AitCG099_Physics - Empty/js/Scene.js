@@ -33,6 +33,7 @@ class Scene extends UniformProvider {
     this.asteroidMaterial = new Material(this.texturedProgram);
     this.asteroidMaterial.colorTexture.set(new Texture2D(gl, "media/asteroid.png"));
     this.asteroidMesh = new Mesh(this.asteroidMaterial, this.texturedQuadGeometry);
+
     const genericMove = function(t, dt){
       const acceleration = new Vec3(this.force).mul(this.invMass);
 
@@ -52,23 +53,24 @@ class Scene extends UniformProvider {
       this.orientation += this.angularVelocity * dt;
     };
 
-    for(let i=0; i < 64; i++){
-      const asteroid = new GameObject( this.asteroidMesh );
+    for(let i=0; i < 20; i++){
+      const asteroid = new GameObject( this.asteroidMesh);
       asteroid.position.setRandom(new Vec3(-12, -12, 0), new Vec3(12, 12, 0) );
       asteroid.velocity.setRandom(new Vec3(-2, -2, 0), new Vec3(2, 2, 0));
       asteroid.angularVelocity = Math.random(-2, 2);
       this.gameObjects.push(asteroid);
       asteroid.move = genericMove;
-      asteroid.force = new Vec3(0, -1, 0);
-      //asteroid.invMass = 0.2;
       asteroid.torque = 2;
-      //asteroid.invAngMass = 0.2;
+      asteroid.radius = 2;
+      asteroid.invMass = 5;
     }
 
+    this.avatar.invMass = 1;
     this.avatar.backDrag = 0.9;
     this.avatar.sideDrag = 0.5;
     this.avatar.angularDrag = 0.5;
-    //this.avatar.velocity = new Vec3(0.1, 0.1, 0);
+    this.avatar.radius = 2;
+
     this.avatar.control = function(t, dt, keysPressed, colliders){
       this.aheadThrust = 0;
       this.sideThrust = 0;
@@ -95,6 +97,32 @@ class Scene extends UniformProvider {
       const sideVector = new Vec3(-Math.sin(this.orientation), Math.cos(this.orientation), 0);
 
       this.force = aheadVector.times(this.aheadThrust).plus(sideVector.times(this.sideThrust));
+
+      for (const other of colliders){
+        if (other === this){
+          continue;
+        }
+        else{
+          const posDiff = new Vec3();
+          posDiff.setDifference(other.position, this.position);
+
+          const dist2 = posDiff.dot(posDiff);
+
+          if (dist2 <= (other.radius + this.radius)){ //collided
+            const normal = posDiff.direction();
+
+            const relVelocity = other.velocity.minus(this.velocity);
+
+            const restitutionCoeff = 1.0;
+
+            const impMag = normal.dot(relVelocity)/(other.invMass + this.invMass) * (1 + restitutionCoeff);
+
+            this.velocity.addScaled(impMag*this.invMass, normal);
+
+            other.velocity.addScaled(-impMag*other.invMass, normal);
+          }
+        }
+      }
     };  
 
     this.avatar.move = genericMove;

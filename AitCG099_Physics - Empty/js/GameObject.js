@@ -21,6 +21,7 @@ class GameObject extends UniformProvider {
     this.invAngularMass = 1;
     this.angularVelocity = 0;
     this.angularDrag = 1;
+    this.radius = 0;
 
     this.addComponentsAndGatherUniforms(mesh); // defines this.modelMatrix
   }
