@@ -9,8 +9,6 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
   	sampler2D colorTexture;
   } material;
 
-
-
   void main(void) {
     fragmentColor = texture(material.colorTexture, texCoord.xy);  
   }
