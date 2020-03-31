@@ -92,7 +92,7 @@ class Scene extends UniformProvider {
       }
 
       const aheadVector = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation), 0);
-      const sideVector = new Vec3(Math.sin(this.orientation), -Math.cos(this.orientation), 0);
+      const sideVector = new Vec3(-Math.sin(this.orientation), Math.cos(this.orientation), 0);
 
       this.force = aheadVector.times(this.aheadThrust).plus(sideVector.times(this.sideThrust));
     };  
@@ -141,10 +141,10 @@ class Scene extends UniformProvider {
     }
 
     for(const gameObject of this.gameObjects) {
-        gameObject.update();
+      gameObject.update();
     }
     for(const gameObject of this.gameObjects) {
-        gameObject.draw(this, this.camera);
+      gameObject.draw(this, this.camera);
     }
   }
 }
