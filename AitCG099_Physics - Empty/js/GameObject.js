@@ -28,6 +28,8 @@ class GameObject extends UniformProvider {
     this.collidable = true;
     this.showing = true;
 
+    this.lastTimeShot = 0;
+
     this.addComponentsAndGatherUniforms(mesh); // defines this.modelMatrix
   }
 

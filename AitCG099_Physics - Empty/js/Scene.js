@@ -84,6 +84,10 @@ class Scene extends UniformProvider {
     this.explosionMaterial = new Material(this.texturedAniProgram);
     this.explosionMaterial.colorTexture.set(new Texture2D(gl, "media/boom.png"));
 
+    this.rocketMaterial = new Material(this.texturedProgram);
+    this.rocketMaterial.colorTexture.set(new Texture2D(gl, "media/rocket.png"));
+    this.rocketMesh = new Mesh(this.rocketMaterial, this.texturedQuadGeometry);
+
     this.explodingObjects = [];
     this.explodedObjects = [];
     this.offset = new Vec2(0.0, 0.0);
@@ -107,7 +111,7 @@ class Scene extends UniformProvider {
       this.orientation += this.angularVelocity * dt;
     };
 
-    const genericControl = function(t, dt, keysPressed, colliders){
+    const genericControl = function(t, dt, keysPressed, colliders, rocketMesh){
       for (const other of colliders){
         if (other === this || other.collidable === false || this.collidable === false){
           continue;
@@ -148,7 +152,7 @@ class Scene extends UniformProvider {
       }
     }; 
 
-    for(let i=0; i < 2; i++){
+    for(let i=0; i < 64; i++){
       const asteroid = new GameObject( this.asteroidMesh);
       // asteroid.position.set(-10, -16);
       asteroid.position.setRandom(new Vec3(-12, -12, 0), new Vec3(12, 12, 0) );
@@ -169,7 +173,7 @@ class Scene extends UniformProvider {
     this.avatar.angularDrag = 0.6;
     this.avatar.radius = 2;
 
-    this.avatar.control = function(t, dt, keysPressed, colliders){
+    this.avatar.control = function(t, dt, keysPressed, colliders, rocketMesh){
       this.aheadThrust = 0;
       this.sideThrust = 0;
 
@@ -178,6 +182,7 @@ class Scene extends UniformProvider {
       this.rightFlame.showing = false;
       this.leftFlame.showing = false;
 
+      //Raider control
       if(keysPressed["UP"]) {
         this.aheadThrust += 2;
         this.backFlame.showing = true;
@@ -204,6 +209,25 @@ class Scene extends UniformProvider {
       const sideVector = new Vec3(-Math.sin(this.orientation), Math.cos(this.orientation), 0);
 
       this.force = aheadVector.times(this.aheadThrust).plus(sideVector.times(this.sideThrust));
+
+      //Rocket shooting
+      if (keysPressed["SPACE"] && (t - this.lastTimeShot >= 1.2 || this.lastTimeShot === 0)){ //pressing SPACE and there was at least 1.2 sec between shots
+        const rocketObject = new GameObject(rocketMesh);
+        colliders.push(rocketObject);
+        rocketObject.explodable = true;
+        rocketObject.collidable = true;
+        rocketObject.scale = new Vec3(0.8, 0.8, 1);
+        rocketObject.position = new Vec3(this.position);
+        rocketObject.position.addScaled(1.8, aheadVector);
+        rocketObject.orientation = 270*Math.PI/180 + this.orientation;
+        rocketObject.move = genericMove;
+        rocketObject.control = genericControl;
+        rocketObject.velocity.addScaled(5, aheadVector);
+        this.lastTimeShot = t;
+        rocketObject.radius = 0.5;
+        rocketObject.backDrag = 0.2;
+        rocketObject.sideDrag = 0.2;
+      }
 
       for (const other of colliders){
         if (other === this || other.collidable === false || this.collidable === false){
@@ -310,7 +334,7 @@ class Scene extends UniformProvider {
     }
 
     for(const gameObject of this.gameObjects) {
-      gameObject.control(t, dt, keysPressed, this.gameObjects);
+      gameObject.control(t, dt, keysPressed, this.gameObjects, this.rocketMesh);
     }
 
     for(const gameObject of this.gameObjects) {
