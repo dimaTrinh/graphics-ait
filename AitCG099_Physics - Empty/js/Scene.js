@@ -33,6 +33,50 @@ class Scene extends UniformProvider {
     this.avatar.position.set(-13, -13);
     this.gameObjects.push(this.avatar);
 
+    this.flameMaterial = new Material(this.texturedProgram);
+    this.flameMaterial.colorTexture.set(new Texture2D(gl, "media/afterburner.png"));
+    this.flameMesh = new Mesh(this.flameMaterial, this.texturedQuadGeometry);
+
+    this.flameBack = new GameObject(this.flameMesh);
+    this.avatar.backFlame = this.flameBack;
+    this.flameBack.position.set(-1.5, 0.2);
+    this.gameObjects.push(this.flameBack);
+    this.flameBack.orientation = 180*Math.PI/180;
+    this.flameBack.scale = new Vec3(0.7, 0.7, 1);
+    this.flameBack.collidable = false;
+    this.flameBack.parent = this.avatar;
+    this.flameBack.showing = false;
+
+    this.flameFront = new GameObject(this.flameMesh);
+    this.avatar.frontFlame = this.flameFront;
+    this.flameFront.position.set(1.5, -0.14);
+    this.gameObjects.push(this.flameFront);
+    this.flameFront.orientation = 0;
+    this.flameFront.scale = new Vec3(0.7, 0.7, 1);
+    this.flameFront.collidable = false;
+    this.flameFront.parent = this.avatar;
+    this.flameFront.showing = false;
+
+    this.flameLeft = new GameObject(this.flameMesh);
+    this.avatar.leftFlame = this.flameLeft;
+    this.flameLeft.position.set(-0.9, 1.3);
+    this.gameObjects.push(this.flameLeft);
+    this.flameLeft.orientation = 140*Math.PI/180;
+    this.flameLeft.scale = new Vec3(0.7, 0.7, 1);
+    this.flameLeft.collidable = false;
+    this.flameLeft.parent = this.avatar;
+    this.flameLeft.showing = false;
+
+    this.flameRight = new GameObject(this.flameMesh);
+    this.avatar.rightFlame = this.flameRight;
+    this.flameRight.position.set(-1.1, -0.95);
+    this.gameObjects.push(this.flameRight);
+    this.flameRight.orientation = 220*Math.PI/180;
+    this.flameRight.scale = new Vec3(0.7, 0.7, 1);
+    this.flameRight.collidable = false;
+    this.flameRight.parent = this.avatar;
+    this.flameRight.showing = false;
+
     this.asteroidMaterial = new Material(this.texturedProgram);
     this.asteroidMaterial.colorTexture.set(new Texture2D(gl, "media/asteroid.png"));
     this.asteroidMesh = new Mesh(this.asteroidMaterial, this.texturedQuadGeometry);
@@ -65,7 +109,7 @@ class Scene extends UniformProvider {
 
     const genericControl = function(t, dt, keysPressed, colliders){
       for (const other of colliders){
-        if (other === this){
+        if (other === this || other.collidable === false || this.collidable === false){
           continue;
         }
         else{
@@ -104,12 +148,12 @@ class Scene extends UniformProvider {
       }
     }; 
 
-    for(let i=0; i < 64; i++){
+    for(let i=0; i < 2; i++){
       const asteroid = new GameObject( this.asteroidMesh);
       // asteroid.position.set(-10, -16);
       asteroid.position.setRandom(new Vec3(-12, -12, 0), new Vec3(12, 12, 0) );
-      // asteroid.velocity.setRandom(new Vec3(-2, -2, 0), new Vec3(2, 2, 0));
-      // asteroid.angularVelocity = Math.random(-2, 2);
+      asteroid.velocity.setRandom(new Vec3(-2, -2, 0), new Vec3(2, 2, 0));
+      asteroid.angularVelocity = Math.random(-2, 2);
       this.gameObjects.push(asteroid);
       asteroid.move = genericMove;
       asteroid.control = genericControl;
@@ -129,11 +173,18 @@ class Scene extends UniformProvider {
       this.aheadThrust = 0;
       this.sideThrust = 0;
 
+      this.backFlame.showing = false;
+      this.frontFlame.showing = false;
+      this.rightFlame.showing = false;
+      this.leftFlame.showing = false;
+
       if(keysPressed["UP"]) {
         this.aheadThrust += 2;
+        this.backFlame.showing = true;
       } 
       if(keysPressed["DOWN"]){
         this.aheadThrust -= 2;
+        this.frontFlame.showing = true;
       }
       this.sideThrust = 0;
 
@@ -141,10 +192,12 @@ class Scene extends UniformProvider {
       if(keysPressed["LEFT"]) {
         this.sideThrust += 2;
         this.torque += 1;
+        this.rightFlame.showing = true;
       } 
       if(keysPressed["RIGHT"]){
         this.sideThrust -= 2;
         this.torque -= 1;
+        this.leftFlame.showing = true;
       }
 
       const aheadVector = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation), 0);
@@ -153,7 +206,7 @@ class Scene extends UniformProvider {
       this.force = aheadVector.times(this.aheadThrust).plus(sideVector.times(this.sideThrust));
 
       for (const other of colliders){
-        if (other === this){
+        if (other === this || other.collidable === false || this.collidable === false){
           continue;
         }
         else{
@@ -175,7 +228,7 @@ class Scene extends UniformProvider {
 
             const relVelocity = other.velocity.minus(this.velocity);
 
-            const restitutionCoeff = 1.0;
+            const restitutionCoeff = 0.7;
 
             const impMag = normal.dot(relVelocity)/(other.invMass + this.invMass) * (1 + restitutionCoeff);
 
@@ -249,7 +302,7 @@ class Scene extends UniformProvider {
       }
     }
 
-    while (this.explodedObjects.length !== 0){
+    while (this.explodedObjects.length !== 0){ //remove the objects that finished exploding
       let temp = this.explodedObjects[0];
       this.explodingObjects.splice(this.explodingObjects.indexOf(temp), 1);
       this.explodedObjects.splice(this.explodedObjects.indexOf(temp), 1);
@@ -268,11 +321,13 @@ class Scene extends UniformProvider {
       gameObject.update();
     }
     for(const gameObject of this.gameObjects) {
-      if (gameObject.exploding === true){ //object is exploding
-        gameObject.using(this.explosionMaterial).draw(this, this.camera);
-      }
-      else{
-        gameObject.draw(this, this.camera);
+      if (gameObject.showing === true){ //object is not currently hidden
+        if (gameObject.exploding === true){ //object is exploding, use a different material for it
+          gameObject.using(this.explosionMaterial).draw(this, this.camera);
+        }
+        else{
+          gameObject.draw(this, this.camera);
+        }
       }
     }
   }

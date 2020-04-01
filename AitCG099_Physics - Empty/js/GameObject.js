@@ -25,6 +25,8 @@ class GameObject extends UniformProvider {
     this.explodable = false;
     this.exploding = false;
     this.offset = new Vec2(0.0,0.0);
+    this.collidable = true;
+    this.showing = true;
 
     this.addComponentsAndGatherUniforms(mesh); // defines this.modelMatrix
   }
