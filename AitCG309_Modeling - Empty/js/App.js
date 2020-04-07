@@ -40,16 +40,22 @@ class App{
     };
     this.canvas.onmousedown = (event) => {
       //jshint unused:false
+      this.scene.camera.isDragging = true; 
+      this.scene.camera.mouseDelta.set(); 
     };
     this.canvas.onmousemove = (event) => {
       //jshint unused:false
       event.stopPropagation();
+      this.scene.camera.mouseDelta.x += event.movementX; 
+      this.scene.camera.mouseDelta.y += event.movementY; 
+      event.preventDefault();  
     };
     this.canvas.onmouseout = (event) => {
       //jshint unused:false
     };
     this.canvas.onmouseup = (event) => {
       //jshint unused:false
+      this.scene.camera.isDragging = false; 
     };
     window.addEventListener('resize', () => this.resize() );
     window.requestAnimationFrame( () => this.update() );
