@@ -7,8 +7,14 @@ class Scene extends UniformProvider {
 
     this.fsTextured = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs.glsl");
     this.vsTextured = new Shader(gl, gl.VERTEX_SHADER, "textured-vs.glsl");    
+
+    this.fsTexturedBackground = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-background.glsl");
+    this.vsTexturedBackGround = new Shader(gl, gl.VERTEX_SHADER, "textured-vs-background.glsl");  
+
     this.programs.push( 
     	this.texturedProgram = new TexturedProgram(gl, this.vsTextured, this.fsTextured));
+    this.programs.push(this.backgroundProgram = new TexturedProgram(gl, this.vsTexturedBackGround, this.fsTexturedBackground));
+
     this.texturedQuadGeometry = new TexturedQuadGeometry(gl);    
 
     this.timeAtFirstFrame = new Date().getTime();
@@ -21,6 +27,18 @@ class Scene extends UniformProvider {
     this.slowpokeEyeMaterial.colorTexture.set(new Texture2D(gl, 
         "./media/slowpoke/YadonEyeDh.png"));
 
+    this.envTexture = new TextureCube(gl, [
+    "media/posx512.jpg",
+    "media/negx512.jpg",
+    "media/posy512.jpg",
+    "media/negy512.jpg",
+    "media/posz512.jpg",
+    "media/negz512.jpg",]
+    );
+
+    this.backgroundMaterial = new Material(this.backgroundProgram);
+    this.backgroundMaterial.envTexture.set(this.envTexture);
+
     this.material = new Material(this.texturedProgram);
     this.material.colorTexture.set(new Texture2D(gl, "./media/usa.jpg"));
 
@@ -28,10 +46,16 @@ class Scene extends UniformProvider {
     this.slowpokeMesh = new MultiMesh(gl, 
         "./media/slowpoke/slowpoke.json", 
         [this.slowpokeMaterial, this.slowpokeEyeMaterial]);
+
+    this.backgroundMesh = new Mesh(this.backgroundMaterial, this.texturedQuadGeometry);
+    this.background = new GameObject(this.backgroundMesh);
+    this.background.update = function(){};
+
     this.avatar = new GameObject(this.slowpokeMesh);
     this.gameObjects = [];
     this.gameObjects.push(this.avatar);
-    this.avatar.scale.set(0.1, 0.1,0.1);
+    this.gameObjects.push(this.background)
+    this.avatar.scale.set(0.3, 0.3,0.3);
     this.avatar.yaw = 1.5;
 
     // for(let i=0; i<50; i++){

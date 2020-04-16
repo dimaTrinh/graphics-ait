@@ -23,6 +23,7 @@ class PerspectiveCamera extends UniformProvider {
 
         this.rotationMatrix = new Mat4();    
         this.viewProjMatrix = new Mat4(); 
+        this.rayDirMatrix = new Mat4();
         this.update();
 
         this.addComponentsAndGatherUniforms(...programs);
@@ -48,6 +49,8 @@ class PerspectiveCamera extends UniformProvider {
             0    ,  yScale ,      0       ,   0, 
             0    ,    0    ,  (n+f)/(n-f) ,  -1, 
             0    ,    0    ,  2*n*f/(n-f) ,   0)); 
+
+        this.rayDirMatrix.set().translate(this.position).mul(this.viewProjMatrix).invert();
     }
 
     setAspectRatio(ar) { 
@@ -91,6 +94,8 @@ class PerspectiveCamera extends UniformProvider {
         if(keysPressed.Q) { 
             this.position.addScaled(-this.speed * dt, this.up); 
         } 
+        this.rayDirMatrix.set().translate(this.position).mul(this.viewProjMatrix).invert();
+        this.update();
     } 
 } 
 
