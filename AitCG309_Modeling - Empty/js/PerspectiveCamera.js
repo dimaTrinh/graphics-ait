@@ -3,9 +3,10 @@
 class PerspectiveCamera extends UniformProvider {
     constructor(...programs) { 
         super("camera");
-        this.position = new Vec3(0, 7.4, 0.6); 
+        this.position = new Vec3(0, 9.0, -20.0);
+        this.worldPosition = new Vec3(); 
         this.roll = 0;
-        this.pitch = 0;
+        this.pitch = 0*Math.PI/180;
         this.yaw = 180*Math.PI/180;  
                
         this.fov = 1.0; 
@@ -13,17 +14,10 @@ class PerspectiveCamera extends UniformProvider {
         this.nearPlane = 0.1; 
         this.farPlane = 1000.0;
 
-        // this.speed = 5; 
-        // this.isDragging = false; 
-        // this.mouseDelta = new Vec2(0.0, 0.0); 
-
-        // this.ahead = new Vec3(0.0, 0.0, -1.0); 
-        // this.right = new Vec3(1.0, 0.0, 0.0); 
-        // this.up = new Vec3(0.0, 1.0, 0.0);
-
         this.rotationMatrix = new Mat4();    
         this.viewProjMatrix = new Mat4(); 
         this.rayDirMatrix = new Mat4();
+        this.origViewProjMatrix = new Mat4();
         this.update();
 
         this.addComponentsAndGatherUniforms(...programs);
@@ -60,11 +54,13 @@ class PerspectiveCamera extends UniformProvider {
             0    ,    0    ,  (n+f)/(n-f) ,  -1, 
             0    ,    0    ,  2*n*f/(n-f) ,   0)); 
 
-        this.origViewProjMatrix = new Mat4().set(this.rotationMatrix).
-              translate(this.position).
-              invert();
+        this.worldPosition.set(this.position);        
+        if (this.parent){
+            this.parent.update();
+            this.worldPosition.xyz1mul(this.parent.modelMatrix);
+        }
 
-        this.rayDirMatrix.set().translate(this.position).mul(this.origViewProjMatrix).invert();
+        this.rayDirMatrix.set().translate(this.worldPosition).mul(this.viewProjMatrix).invert();
     }
 
     setAspectRatio(ar) { 

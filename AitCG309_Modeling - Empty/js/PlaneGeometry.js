@@ -79,14 +79,6 @@ class PlaneGeometry {
       0, //< tightly packed
       0 //< data starts at array start
     );     
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTexCoordBuffer); 
-    gl.enableVertexAttribArray(2); 
-    gl.vertexAttribPointer(2, 
-      2, gl.FLOAT, //< two pieces of float 
-      false, //< do not normalize (make unit length) 
-      0, //< tightly packed 
-      0 //< data starts at array start 
-    ); 
 
     gl.bindVertexArray(null);
   }

@@ -67,7 +67,7 @@ class Scene extends UniformProvider {
     this.ground.noShadow = true;
 
     const esp = 0.05;
-    const lightDirection = new Vec4(-1,1,1,0);
+    const lightDirection = new Vec4(20,9,-5,0);
     const A = -lightDirection.x/lightDirection.y;
     const B = -lightDirection.z/lightDirection.y;
     this.shadowMatrix = new Mat4( 
@@ -134,7 +134,7 @@ class Scene extends UniformProvider {
     
     this.avatar.move(dt, keysPressed);
     this.camera.update();
-    
+
     for(const gameObject of this.gameObjects) {
         gameObject.update();
     }
