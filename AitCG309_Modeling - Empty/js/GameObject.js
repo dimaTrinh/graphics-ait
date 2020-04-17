@@ -9,6 +9,7 @@ class GameObject extends UniformProvider {
     this.pitch = 0;
     this.yaw = 0;
     this.scale = new Vec3(1, 1, 1); 
+    this.noShadow = false;
 
     this.addComponentsAndGatherUniforms(mesh); // defines this.modelMatrix
   }

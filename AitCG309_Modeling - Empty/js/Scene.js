@@ -9,11 +9,15 @@ class Scene extends UniformProvider {
     this.vsTextured = new Shader(gl, gl.VERTEX_SHADER, "textured-vs.glsl");    
 
     this.fsTexturedBackground = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-background.glsl");
-    this.vsTexturedBackGround = new Shader(gl, gl.VERTEX_SHADER, "textured-vs-background.glsl");  
+    this.vsTexturedBackGround = new Shader(gl, gl.VERTEX_SHADER, "textured-vs-background.glsl"); 
+
+    this.fsShadow = new Shader(gl, gl.FRAGMENT_SHADER, "shadow-fs.glsl");
+    this.vsShadow = new Shader(gl, gl.VERTEX_SHADER, "shadow-vs.glsl");   
 
     this.programs.push( 
     	this.texturedProgram = new TexturedProgram(gl, this.vsTextured, this.fsTextured));
     this.programs.push(this.backgroundProgram = new TexturedProgram(gl, this.vsTexturedBackGround, this.fsTexturedBackground));
+    this.programs.push(this.shadowProgram = new TexturedProgram(gl, this.vsShadow, this.fsShadow));
 
     this.texturedQuadGeometry = new TexturedQuadGeometry(gl);    
 
@@ -39,6 +43,8 @@ class Scene extends UniformProvider {
     this.backgroundMaterial = new Material(this.backgroundProgram);
     this.backgroundMaterial.envTexture.set(this.envTexture);
 
+    this.shadowMaterial = new Material(this.shadowProgram);
+
     this.material = new Material(this.texturedProgram);
     this.material.colorTexture.set(new Texture2D(gl, "./media/usa.jpg"));
 
@@ -50,6 +56,17 @@ class Scene extends UniformProvider {
     this.backgroundMesh = new Mesh(this.backgroundMaterial, this.texturedQuadGeometry);
     this.background = new GameObject(this.backgroundMesh);
     this.background.update = function(){};
+    this.background.noShadow = true;
+
+    const esp = 0.05;
+    const lightDirection = new Vec4(-1,1,1,0);
+    const A = -lightDirection.x/lightDirection.y;
+    const B = -lightDirection.z/lightDirection.y;
+    this.shadowMatrix = new Mat4( 
+            1 ,    0    ,      0       ,   0, 
+            A    ,  0 ,      B       ,   0, 
+            0    ,    0    ,  1 ,  0, 
+            0    ,    esp    ,  0 ,   1); 
 
     this.avatar = new GameObject(this.slowpokeMesh);
     this.gameObjects = [];
@@ -66,6 +83,12 @@ class Scene extends UniformProvider {
 
     this.camera = new PerspectiveCamera(...this.programs); 
     this.addComponentsAndGatherUniforms(...this.programs);
+    this.shadowMatrix.set();
+    this.shadowMatrix = new Mat4( 
+            1 ,    0    ,      0       ,   0, 
+            A    ,  0 ,      B       ,   0, 
+            0    ,    0    ,  1 ,  0, 
+            0    ,    esp    ,  0 ,   1); 
   }
 
   resize(gl, canvas) {
@@ -101,6 +124,12 @@ class Scene extends UniformProvider {
     
     for(const gameObject of this.gameObjects) {
         gameObject.draw(this, this.camera);
+    }
+
+    for(const gameObject of this.gameObjects) {
+      if(!gameObject.noShadow){ // ground, background need no shadow
+        gameObject.using(this.shadowMaterial).draw(this, this.camera);
+      }
     }
   }
 }
