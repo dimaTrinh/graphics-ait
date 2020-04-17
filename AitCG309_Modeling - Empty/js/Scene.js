@@ -14,12 +14,16 @@ class Scene extends UniformProvider {
     this.fsShadow = new Shader(gl, gl.FRAGMENT_SHADER, "shadow-fs.glsl");
     this.vsShadow = new Shader(gl, gl.VERTEX_SHADER, "shadow-vs.glsl");   
 
+    this.fsGround = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-ground.glsl");
+
     this.programs.push( 
     	this.texturedProgram = new TexturedProgram(gl, this.vsTextured, this.fsTextured));
     this.programs.push(this.backgroundProgram = new TexturedProgram(gl, this.vsTexturedBackGround, this.fsTexturedBackground));
     this.programs.push(this.shadowProgram = new TexturedProgram(gl, this.vsShadow, this.fsShadow));
+    this.programs.push(this.groundProgram = new TexturedProgram(gl, this.vsTextured, this.fsGround));
 
     this.texturedQuadGeometry = new TexturedQuadGeometry(gl);    
+    this.planeGeometry = new PlaneGeometry(gl);
 
     this.timeAtFirstFrame = new Date().getTime();
     this.timeAtLastFrame = this.timeAtFirstFrame;
@@ -45,10 +49,9 @@ class Scene extends UniformProvider {
 
     this.shadowMaterial = new Material(this.shadowProgram);
 
-    this.material = new Material(this.texturedProgram);
-    this.material.colorTexture.set(new Texture2D(gl, "./media/usa.jpg"));
-
-    this.mesh = new Mesh(this.material, this.texturedQuadGeometry);
+    this.groundMaterial = new Material(this.groundProgram);
+    this.groundMaterial.colorTexture.set(new Texture2D(gl, "./media/ground.jpg"));
+    
     this.slowpokeMesh = new MultiMesh(gl, 
         "./media/slowpoke/slowpoke.json", 
         [this.slowpokeMaterial, this.slowpokeEyeMaterial]);
@@ -57,6 +60,11 @@ class Scene extends UniformProvider {
     this.background = new GameObject(this.backgroundMesh);
     this.background.update = function(){};
     this.background.noShadow = true;
+
+    this.groundMesh = new Mesh(this.groundMaterial, this.planeGeometry);
+    this.ground = new GameObject(this.groundMesh);
+    this.ground.update = function(){};
+    this.ground.noShadow = true;
 
     const esp = 0.05;
     const lightDirection = new Vec4(-1,1,1,0);
@@ -72,6 +80,7 @@ class Scene extends UniformProvider {
     this.gameObjects = [];
     this.gameObjects.push(this.avatar);
     this.gameObjects.push(this.background)
+    this.gameObjects.push(this.ground);
     this.avatar.scale.set(0.3, 0.3,0.3);
     this.avatar.yaw = 1.5;
 
