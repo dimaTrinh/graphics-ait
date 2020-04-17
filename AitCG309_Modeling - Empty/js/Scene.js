@@ -51,7 +51,7 @@ class Scene extends UniformProvider {
 
     this.groundMaterial = new Material(this.groundProgram);
     this.groundMaterial.colorTexture.set(new Texture2D(gl, "./media/ground.jpg"));
-    
+
     this.slowpokeMesh = new MultiMesh(gl, 
         "./media/slowpoke/slowpoke.json", 
         [this.slowpokeMaterial, this.slowpokeEyeMaterial]);
@@ -77,12 +77,16 @@ class Scene extends UniformProvider {
             0    ,    esp    ,  0 ,   1); 
 
     this.avatar = new GameObject(this.slowpokeMesh);
+    this.avatar.scale.set(0.3, 0.3,0.3);
+    this.avatar.yaw = 1.5;
+
     this.gameObjects = [];
     this.gameObjects.push(this.avatar);
     this.gameObjects.push(this.background)
     this.gameObjects.push(this.ground);
-    this.avatar.scale.set(0.3, 0.3,0.3);
-    this.avatar.yaw = 1.5;
+
+    this.background.move = function(){};
+    this.ground.move = function(){};
 
     // for(let i=0; i<50; i++){
     //     const tri = new GameObject(this.mesh);
@@ -91,6 +95,9 @@ class Scene extends UniformProvider {
     // }
 
     this.camera = new PerspectiveCamera(...this.programs); 
+    this.camera.parent = this.avatar;
+    this.camera.update();
+
     this.addComponentsAndGatherUniforms(...this.programs);
     this.shadowMatrix.set();
     this.shadowMatrix = new Mat4( 
@@ -124,13 +131,14 @@ class Scene extends UniformProvider {
     gl.clearColor(0.3, 0.0, 0.3, 1.0);
     gl.clearDepth(1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    this.camera.move(dt, keysPressed);
-
+    
+    this.avatar.move(dt, keysPressed);
+    this.camera.update();
+    
     for(const gameObject of this.gameObjects) {
         gameObject.update();
     }
-    
+
     for(const gameObject of this.gameObjects) {
         gameObject.draw(this, this.camera);
     }
