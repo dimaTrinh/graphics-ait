@@ -16,11 +16,14 @@ class Scene extends UniformProvider {
 
     this.fsGround = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-ground.glsl");
 
+    this.fsProced = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-proced.glsl");
+
     this.programs.push( 
     	this.texturedProgram = new TexturedProgram(gl, this.vsTextured, this.fsTextured));
     this.programs.push(this.backgroundProgram = new TexturedProgram(gl, this.vsTexturedBackGround, this.fsTexturedBackground));
     this.programs.push(this.shadowProgram = new TexturedProgram(gl, this.vsShadow, this.fsShadow));
     this.programs.push(this.groundProgram = new TexturedProgram(gl, this.vsTextured, this.fsGround));
+    this.programs.push(this.procedProgram = new TexturedProgram(gl, this.vsTextured, this.fsProced));
 
     this.texturedQuadGeometry = new TexturedQuadGeometry(gl);    
     this.planeGeometry = new PlaneGeometry(gl);
@@ -49,12 +52,24 @@ class Scene extends UniformProvider {
 
     this.shadowMaterial = new Material(this.shadowProgram);
 
+    this.procedMaterial = new Material(this.procedProgram);
+    this.procedMaterial.color1.set(new Vec3(1.0,1.0,1.0));
+    this.procedMaterial.color2.set(new Vec3(0.0,0.0,1.0));
+    this.procedMaterial.freq = 15;
+    this.procedMaterial.noiseFreq = 25;
+    this.procedMaterial.noiseExp = 3;
+    this.procedMaterial.noiseAmp = 20;
+
     this.groundMaterial = new Material(this.groundProgram);
     this.groundMaterial.colorTexture.set(new Texture2D(gl, "./media/ground.jpg"));
 
     this.slowpokeMesh = new MultiMesh(gl, 
         "./media/slowpoke/slowpoke.json", 
         [this.slowpokeMaterial, this.slowpokeEyeMaterial]);
+
+    this.slowpokeMesh2 = new MultiMesh(gl, 
+        "./media/slowpoke/slowpoke.json", 
+        [this.procedMaterial, this.procedMaterial]);
 
     this.backgroundMesh = new Mesh(this.backgroundMaterial, this.texturedQuadGeometry);
     this.background = new GameObject(this.backgroundMesh);
@@ -76,7 +91,7 @@ class Scene extends UniformProvider {
             0    ,    0    ,  1 ,  0, 
             0    ,    esp    ,  0 ,   1); 
 
-    this.avatar = new GameObject(this.slowpokeMesh);
+    this.avatar = new GameObject(this.slowpokeMesh2);
     this.avatar.scale.set(0.3, 0.3,0.3);
     this.avatar.yaw = 1.5;
 
