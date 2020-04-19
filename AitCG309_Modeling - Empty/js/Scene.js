@@ -114,7 +114,7 @@ class Scene extends UniformProvider {
     this.camera.update();
 
     this.addComponentsAndGatherUniforms(...this.programs);
-    this.shadowMatrix.set();
+    
     this.shadowMatrix = new Mat4( 
             1 ,    0    ,      0       ,   0, 
             A    ,  0 ,      B       ,   0, 
