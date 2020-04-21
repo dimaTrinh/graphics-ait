@@ -84,7 +84,15 @@ class Scene extends UniformProvider {
     this.lights = [];
     this.lights.push(new Light(this.lights.length, ...this.programs));
     this.lights[0].position.set(1, 1, 1, 0).normalize();
-    this.lights[0].powerDensity.set(1, 1, 0);
+    this.lights[0].powerDensity.set(0.5, 0.6, 0.3);
+
+    this.lights.push(new Light(this.lights.length, ...this.programs));
+    this.lights[1].position.set(-1, -1, 1, 0).normalize();
+    this.lights[1].powerDensity.set(1, 1, 1);
+
+    this.lights.push(new Light(this.lights.length, ...this.programs));
+    this.lights[2].position.set(0, 8, 10, 1).normalize();
+    this.lights[2].powerDensity.set(1, 1, 1);
 
     const esp = 0.05;
     const lightDirection = new Vec4(20,9,-5,0);
@@ -124,7 +132,7 @@ class Scene extends UniformProvider {
             1 ,    0    ,      0       ,   0, 
             A    ,  0 ,      B       ,   0, 
             0    ,    0    ,  1 ,  0, 
-            0    ,    esp    ,  0 ,   1); 
+            0    ,    esp    ,  0 ,   1);
   }
 
   resize(gl, canvas) {
@@ -160,12 +168,12 @@ class Scene extends UniformProvider {
     }
 
     for(const gameObject of this.gameObjects) {
-        gameObject.draw(this, this.camera);
+        gameObject.draw(this, this.camera, ... this.lights);
     }
 
     for(const gameObject of this.gameObjects) {
       if(!gameObject.noShadow){ // ground, background need no shadow
-        gameObject.using(this.shadowMaterial).draw(this, this.camera, ...this.lights);
+        gameObject.using(this.shadowMaterial).draw(this, this.camera);
       }
     }
   }

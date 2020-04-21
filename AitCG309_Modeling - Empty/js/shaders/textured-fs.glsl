@@ -5,6 +5,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
   in vec4 color;
   in vec4 tex;
   in vec4 normal;
+  in vec4 modelPosition;
 
   uniform struct{
   	vec4 solidColor;
@@ -26,9 +27,12 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
   }
 
   void main(void) {
-    for (int i = 0; i < lights.length(); i++){
-      vec3 lightDir = lights[i].position.xyz;
-      vec3 powerDensity = lights[i].powerDensity;
+    for (int i = 2; i <= 2; i++){
+      vec3 tempLight = vec3(lights[i].position.x + cos(scene.time), lights[i].position.y, lights[i].position.z + sin(scene.time));
+      vec3 lightDiff = tempLight.xyz - modelPosition.xyz * lights[i].position.w;
+      vec3 lightDir = normalize(lightDiff);
+      float distanceSquared = dot(lightDiff, lightDiff);
+      vec3 powerDensity = lights[i].powerDensity/distanceSquared;
 
       fragmentColor.rgb += shade(normal.xyz, lightDir, powerDensity, texture(material.colorTexture, tex.xy/tex.w).rgb);
     }

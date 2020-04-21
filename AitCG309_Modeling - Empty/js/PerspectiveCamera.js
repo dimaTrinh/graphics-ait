@@ -3,11 +3,11 @@
 class PerspectiveCamera extends UniformProvider {
     constructor(...programs) { 
         super("camera");
-        this.position = new Vec3(0, 9.0, -20.0);
+        this.position = new Vec3(0, 8.0, 25.0);
         this.worldPosition = new Vec3(); 
         this.roll = 0;
         this.pitch = 0*Math.PI/180;
-        this.yaw = 180*Math.PI/180;  
+        this.yaw = 0*Math.PI/180;  
                
         this.fov = 1.0; 
         this.aspect = 1.0; 
