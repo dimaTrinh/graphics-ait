@@ -81,6 +81,11 @@ class Scene extends UniformProvider {
     this.ground.update = function(){};
     this.ground.noShadow = true;
 
+    this.lights = [];
+    this.lights.push(new Light(this.lights.length, ...this.programs));
+    this.lights[0].position.set(1, 1, 1, 0).normalize();
+    this.lights[0].powerDensity.set(1, 1, 0);
+
     const esp = 0.05;
     const lightDirection = new Vec4(20,9,-5,0);
     const A = -lightDirection.x/lightDirection.y;
@@ -91,7 +96,7 @@ class Scene extends UniformProvider {
             0    ,    0    ,  1 ,  0, 
             0    ,    esp    ,  0 ,   1); 
 
-    this.avatar = new GameObject(this.slowpokeMesh2);
+    this.avatar = new GameObject(this.slowpokeMesh);
     this.avatar.scale.set(0.3, 0.3,0.3);
     this.avatar.yaw = 1.5;
 
@@ -160,7 +165,7 @@ class Scene extends UniformProvider {
 
     for(const gameObject of this.gameObjects) {
       if(!gameObject.noShadow){ // ground, background need no shadow
-        gameObject.using(this.shadowMaterial).draw(this, this.camera);
+        gameObject.using(this.shadowMaterial).draw(this, this.camera, ...this.lights);
       }
     }
   }
