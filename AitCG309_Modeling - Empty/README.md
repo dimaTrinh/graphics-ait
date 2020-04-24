@@ -4,3 +4,4 @@ Completed Features:
 3. Diffuse 
 4. Environment mapping
 5. Procedural Normal Mapping 
+6. Specular
