@@ -11,6 +11,7 @@ class GameObject extends UniformProvider {
     this.scale = new Vec3(1, 1, 1); 
     this.noShadow = false;
     this.modelMatrix = new Mat4();
+    this.modelMatrixInverse = new Mat4();
 
     this.speed = 10; 
 
@@ -33,6 +34,7 @@ class GameObject extends UniformProvider {
   		scale(this.scale).
   		mul(this.rotationMatrix).
   		translate(this.position);
+    this.modelMatrixInverse.set(this.modelMatrix).invert();
   }
 
   move(dt, keysPressed) { 
@@ -59,5 +61,5 @@ class GameObject extends UniformProvider {
         this.yaw += 0.02;
     } 
     this.update();
-} 
+  } 
 }

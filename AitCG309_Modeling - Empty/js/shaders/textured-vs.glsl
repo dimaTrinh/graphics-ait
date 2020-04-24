@@ -4,10 +4,12 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
   in vec4 vertexNormal;
   out vec4 tex; // passed to FS
   out vec4 modelPosition;
-  out vec4 normal;
+  out vec4 worldPosition;
+  out vec4 worldNormal;
 
   uniform struct {
   	mat4 modelMatrix;
+    mat4 modelMatrixInverse;
   } gameObject;
 
   uniform struct {
@@ -16,8 +18,9 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   void main(void) {
   	tex = vertexTexCoord;
-    normal = vertexNormal;
+    worldNormal = gameObject.modelMatrixInverse * vec4(vertexNormal.xyz, 0);
     modelPosition = vertexPosition;
+    worldPosition = vertexPosition * gameObject.modelMatrix;
     gl_Position = vertexPosition * gameObject.modelMatrix * camera.viewProjMatrix;
   }
 `;
