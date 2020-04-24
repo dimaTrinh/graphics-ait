@@ -19,6 +19,9 @@ class Scene extends UniformProvider {
     this.fsProced = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-proced.glsl");
 
     this.fsMirror = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-mirror.glsl");
+
+    this.fsPertubed = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-pertubed.glsl");
+
     this.programs.push( 
     	this.texturedProgram = new TexturedProgram(gl, this.vsTextured, this.fsTextured));
     this.programs.push(this.backgroundProgram = new TexturedProgram(gl, this.vsTexturedBackGround, this.fsTexturedBackground));
@@ -26,6 +29,7 @@ class Scene extends UniformProvider {
     this.programs.push(this.groundProgram = new TexturedProgram(gl, this.vsTextured, this.fsGround));
     this.programs.push(this.procedProgram = new TexturedProgram(gl, this.vsTextured, this.fsProced));
     this.programs.push(this.mirrorProgram = new TexturedProgram(gl, this.vsTextured, this.fsMirror));
+    this.programs.push(this.pertubedProgram = new TexturedProgram(gl, this.vsTextured, this.fsPertubed));
 
     this.texturedQuadGeometry = new TexturedQuadGeometry(gl);    
     this.planeGeometry = new PlaneGeometry(gl);
@@ -36,8 +40,21 @@ class Scene extends UniformProvider {
     this.slowpokeMaterial = new Material(this.texturedProgram);
     this.slowpokeMaterial.colorTexture.set(new Texture2D(gl, 
         "./media/slowpoke/YadonDh.png"));
+    this.slowpokeMaterial.specularColor = new Vec3(1.0,1.0,1.0);
+    this.slowpokeMaterial.shininess = 10.0;
+
     this.slowpokeEyeMaterial = new Material(this.texturedProgram);
     this.slowpokeEyeMaterial.colorTexture.set(new Texture2D(gl, 
+        "./media/slowpoke/YadonEyeDh.png"));
+    this.slowpokeEyeMaterial.specularColor = new Vec3(1.0,1.0,1.0);
+    this.slowpokeEyeMaterial.shininess = 10.0;
+
+    this.slowpokeMaterialPertubed = new Material(this.pertubedProgram);
+    this.slowpokeMaterialPertubed.colorTexture.set(new Texture2D(gl, 
+        "./media/slowpoke/YadonDh.png"));
+
+    this.slowpokeEyeMaterialPertubed = new Material(this.pertubedProgram);
+    this.slowpokeEyeMaterialPertubed.colorTexture.set(new Texture2D(gl, 
         "./media/slowpoke/YadonEyeDh.png"));
 
     this.envTexture = new TextureCube(gl, [
@@ -87,6 +104,9 @@ class Scene extends UniformProvider {
     this.slowpokeMesh3 = new MultiMesh(gl, "./media/slowpoke/slowpoke.json", 
         [this.mirrorMaterial, this.mirrorMaterial]);
 
+    this.slowpokeMeshPertubed = new MultiMesh(gl, "./media/slowpoke/slowpoke.json", 
+        [this.slowpokeMaterialPertubed, this.slowpokeEyeMaterialPertubed]);
+
     this.backgroundMesh = new Mesh(this.backgroundMaterial, this.texturedQuadGeometry);
     this.background = new GameObject(this.backgroundMesh);
     this.background.update = function(){};
@@ -124,15 +144,17 @@ class Scene extends UniformProvider {
     this.avatar.scale.set(0.3, 0.3,0.3);
     this.avatar.yaw = 1.5;
 
-    this.object2 = new GameObject(this.slowpokeMesh3);
+    this.object2 = new GameObject(this.slowpokeMeshPertubed);
     this.object2.scale.set(0.3, 0.3,0.3);
     this.object2.position.set(0, 0, -4);
     this.object2.yaw = 1.5;
+    this.object2.parent = this.avatar;
 
-    this.object3 = new GameObject(this.slowpokeMesh2);
+    this.object3 = new GameObject(this.slowpokeMesh3);
     this.object3.scale.set(0.3, 0.3,0.3);
     this.object3.position.set(0, 0, 4);
     this.object3.yaw = 1.5;
+    this.object3.parent = this.avatar;
 
     this.gameObjects = [];
     this.gameObjects.push(this.avatar);

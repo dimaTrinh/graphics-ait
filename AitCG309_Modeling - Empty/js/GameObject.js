@@ -25,16 +25,32 @@ class GameObject extends UniformProvider {
   }
 
   update() {
+    this.modelMatrix.set().
+      scale(this.scale).
+      mul(this.rotationMatrix).
+      translate(this.position);
+      this.modelMatrixInverse.set(this.modelMatrix).invert();
     this.rotationMatrix.set(). 
-          rotate(this.roll).
-          rotate(this.pitch, 1, 0, 0).
-          rotate(this.yaw, 0, 1, 0);
+      rotate(this.roll).
+      rotate(this.pitch, 1, 0, 0).
+      rotate(this.yaw, 0, 1, 0);
 
-  	this.modelMatrix.set().
-  		scale(this.scale).
-  		mul(this.rotationMatrix).
-  		translate(this.position);
-    this.modelMatrixInverse.set(this.modelMatrix).invert();
+    // if (this.parent){
+    //   this.parent.update();
+
+    //   this.modelMatrix.set().
+    // 		scale(this.scale).
+    // 		mul(this.rotationMatrix).
+    // 		translate(this.position).mul(this.parent.modelMatrix);
+    //   this.modelMatrixInverse.set(this.modelMatrix).invert();
+    // }
+    // else{
+    //   this.modelMatrix.set().
+    //     scale(this.scale).
+    //     mul(this.rotationMatrix).
+    //     translate(this.position);
+    //   this.modelMatrixInverse.set(this.modelMatrix).invert();
+    // }
   }
 
   move(dt, keysPressed) { 
