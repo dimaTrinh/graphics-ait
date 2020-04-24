@@ -14,6 +14,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   uniform struct {
     mat4 viewProjMatrix;
+    vec3 worldPosition;
   } camera;
 
   void main(void) {

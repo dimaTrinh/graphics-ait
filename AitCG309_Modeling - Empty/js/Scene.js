@@ -18,12 +18,14 @@ class Scene extends UniformProvider {
 
     this.fsProced = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-proced.glsl");
 
+    this.fsMirror = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs-mirror.glsl");
     this.programs.push( 
     	this.texturedProgram = new TexturedProgram(gl, this.vsTextured, this.fsTextured));
     this.programs.push(this.backgroundProgram = new TexturedProgram(gl, this.vsTexturedBackGround, this.fsTexturedBackground));
     this.programs.push(this.shadowProgram = new TexturedProgram(gl, this.vsShadow, this.fsShadow));
     this.programs.push(this.groundProgram = new TexturedProgram(gl, this.vsTextured, this.fsGround));
     this.programs.push(this.procedProgram = new TexturedProgram(gl, this.vsTextured, this.fsProced));
+    this.programs.push(this.mirrorProgram = new TexturedProgram(gl, this.vsTextured, this.fsMirror));
 
     this.texturedQuadGeometry = new TexturedQuadGeometry(gl);    
     this.planeGeometry = new PlaneGeometry(gl);
@@ -46,6 +48,17 @@ class Scene extends UniformProvider {
     "media/posz512.jpg",
     "media/negz512.jpg",]
     );
+
+    this.skyCubeTexture = new TextureCube(gl, [
+        "media/posx512.jpg",
+        "media/negx512.jpg",
+        "media/posy512.jpg",
+        "media/negy512.jpg",
+        "media/posz512.jpg",
+        "media/negz512.jpg",]
+    );
+    this.mirrorMaterial = new Material(this.mirrorProgram);
+    this.mirrorMaterial.envmapTexture.set(this.skyCubeTexture);
 
     this.backgroundMaterial = new Material(this.backgroundProgram);
     this.backgroundMaterial.envTexture.set(this.envTexture);
@@ -70,6 +83,9 @@ class Scene extends UniformProvider {
     this.slowpokeMesh2 = new MultiMesh(gl, 
         "./media/slowpoke/slowpoke.json", 
         [this.procedMaterial, this.procedMaterial]);
+
+    this.slowpokeMesh3 = new MultiMesh(gl, "./media/slowpoke/slowpoke.json", 
+        [this.mirrorMaterial, this.mirrorMaterial]);
 
     this.backgroundMesh = new Mesh(this.backgroundMaterial, this.texturedQuadGeometry);
     this.background = new GameObject(this.backgroundMesh);
@@ -104,7 +120,7 @@ class Scene extends UniformProvider {
             0    ,    0    ,  1 ,  0, 
             0    ,    esp    ,  0 ,   1); 
 
-    this.avatar = new GameObject(this.slowpokeMesh);
+    this.avatar = new GameObject(this.slowpokeMesh3);
     this.avatar.scale.set(0.3, 0.3,0.3);
     this.avatar.yaw = 1.5;
 

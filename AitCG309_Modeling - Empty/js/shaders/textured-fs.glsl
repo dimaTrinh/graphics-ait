@@ -39,8 +39,8 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
       vec3 powerDensity = lights[i].powerDensity/distanceSquared;
 
       vec3 normal = normalize(worldNormal.xyz); //interpolation would ruin the noramalization, so this step is done here
-      //fragmentColor.rgb += shade(normal, lightDir, powerDensity, texture(material.colorTexture, tex.xy/tex.w).rgb);
-      fragmentColor = vec4(abs(normal),1);
+      fragmentColor.rgb += shade(normal, lightDir, powerDensity, texture(material.colorTexture, tex.xy/tex.w).rgb);
+      //fragmentColor = vec4(abs(normal),1);
     }
   }
 `;
