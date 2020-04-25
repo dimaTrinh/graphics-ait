@@ -145,15 +145,11 @@ class Scene extends UniformProvider {
     this.avatar.yaw = 1.5;
 
     this.object2 = new GameObject(this.slowpokeMeshPertubed);
-    this.object2.scale.set(0.3, 0.3,0.3);
-    this.object2.position.set(0, 0, -4);
-    this.object2.yaw = 1.5;
+    this.object2.position.set(12, 0, 0);
     this.object2.parent = this.avatar;
 
     this.object3 = new GameObject(this.slowpokeMesh3);
-    this.object3.scale.set(0.3, 0.3,0.3);
-    this.object3.position.set(0, 0, 4);
-    this.object3.yaw = 1.5;
+    this.object3.position.set(-12, 0, 0);
     this.object3.parent = this.avatar;
 
     this.gameObjects = [];
