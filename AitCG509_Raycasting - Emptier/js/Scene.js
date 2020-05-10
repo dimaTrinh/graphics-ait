@@ -7,8 +7,12 @@ class Scene extends UniformProvider {
 
     this.vsQuad = new Shader(gl, gl.VERTEX_SHADER, "quad-vs.glsl");    
     this.fsTrace = new Shader(gl, gl.FRAGMENT_SHADER, "trace-fs.glsl");
+    this.fsTextured = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs.glsl");
+    this.vsTextured = new Shader(gl, gl.VERTEX_SHADER, "textured-vs.glsl");  
     this.programs.push( 
     	this.traceProgram = new TexturedProgram(gl, this.vsQuad, this.fsTrace));
+    this.programs.push( 
+      this.texturedProgram = new TexturedProgram(gl, this.vsTextured, this.fsTextured));
 
     this.texturedQuadGeometry = new TexturedQuadGeometry(gl);
 
@@ -24,6 +28,7 @@ class Scene extends UniformProvider {
       "media/posz512.jpg",
       "media/negz512.jpg",]
       );
+
     this.traceMaterial.envTexture.set(this.envTexture);
     this.traceMesh = new Mesh(this.traceMaterial, this.texturedQuadGeometry);
 
@@ -32,6 +37,41 @@ class Scene extends UniformProvider {
     this.camera = new PerspectiveCamera(...this.programs); 
     this.camera.position.set(0, 5, 25);
     this.camera.update();
+
+    this.slowpokeMaterial = new Material(this.texturedProgram);
+    this.slowpokeMaterial.colorTexture.set(new Texture2D(gl, 
+        "./media/slowpoke/YadonDh.png"));
+
+    this.slowpokeEyeMaterial = new Material(this.texturedProgram);
+    this.slowpokeEyeMaterial.colorTexture.set(new Texture2D(gl, 
+        "./media/slowpoke/YadonEyeDh.png"));
+
+    this.slowpokeMesh = new MultiMesh(gl, 
+        "./media/slowpoke/slowpoke.json", 
+        [this.slowpokeMaterial, this.slowpokeEyeMaterial]);
+
+    this.avatar = new GameObject(this.slowpokeMesh);
+    this.avatar.scale.set(0.3, 0.3, 0.3);
+    this.avatar.yaw = 1.5;
+
+    this.gameObjects = [];
+    //this.gameObjects.push(this.avatar);
+
+    this.clippedQuadrics = [];
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[0].makeUnitCylinder();
+
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[1].makeUnitSphere();
+    this.clippedQuadrics[1].transform(new Mat4().set().translate(new Vec3(2.0, 2.5, 0.0)));
+
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[2].makePawn();
+    this.clippedQuadrics[2].transformClipper(new Mat4().set().translate(new Vec3(0, -1, 0.0)));
+    this.clippedQuadrics[2].transform(new Mat4().set().scale(1.5, 2.0, 2.0).translate(new Vec3(2.0, 2.0, 0.0)));
     this.addComponentsAndGatherUniforms(...this.programs);
 
     gl.enable(gl.DEPTH_TEST);
@@ -58,7 +98,6 @@ class Scene extends UniformProvider {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     this.camera.move(dt, keysPressed);
-		this.traceQuad.draw(this, this.camera);
-
+		this.traceQuad.draw(this, this.camera, ...this.clippedQuadrics);
   }
 }
