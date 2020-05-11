@@ -10,4 +10,4 @@ Completed Features:
 3. Lighting
 - Sun
 - Gloria (neon light above the King piece)
-- Ebony and Ivory
+- Ebony and Ivory (on the Pawn piece)

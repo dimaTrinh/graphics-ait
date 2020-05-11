@@ -12,6 +12,8 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
     float noiseFreq;
     float noiseExp;
     float noiseAmp;
+    vec3 specularColor;
+    float shininess;
   } material;
 
   uniform struct {
@@ -97,12 +99,26 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
     return true;
   }
 
-  vec3 shade(vec3 normal, vec3 lightDir, vec3 powerDensity, vec3 materialColor) {
+  vec3 shadeDiffuse(vec3 normal, vec3 lightDir, vec3 powerDensity, vec3 materialColor) {
     float cosa =
       clamp(dot(lightDir, normal),0.0,1.0);
     return
       powerDensity * materialColor * cosa;
   }
+
+  vec3 shadeMaxBlinn(vec3 normal, vec3 lightDir, vec3 viewDir,
+    vec3 powerDensity, vec3 materialColor, vec3 specularColor, float shininess) {
+
+    float cosa = clamp( dot(lightDir, normal), 0.0, 1.0);
+    float cosb = clamp(dot(viewDir, normal), 0.0, 1.0);
+
+    vec3 halfway = normalize(viewDir + lightDir);
+    float cosDelta = clamp(dot(halfway, normal), 0.0, 1.0);
+
+    return powerDensity * materialColor * cosa 
+      + powerDensity * specularColor * pow(cosDelta, shininess) * cosa / max(cosb, cosa);
+  }
+
 
   float snoise(vec3 r) {
     vec3 s = vec3(7502, 22777, 4767);
@@ -155,15 +171,18 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
           bestShadowT * lights[i].position.w > sqrt(dot(lightDiff, lightDiff)) ) {
           // add light source contribution
           if (index == 4 || index == 5){ //shading by its normal
-            fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
+            fragmentColor.rgb += shadeDiffuse(normal, lightDir, powerDensity, normal);
+          }
+          else if (index == 1 || index == 2){ //Maximum Blinn reflection model
+            vec3 viewDir = -d.xyz;
+            fragmentColor.rgb += shadeMaxBlinn(normal, lightDir, viewDir, powerDensity, normal, material.specularColor, material.shininess);
           }
           else{ //Procedural wood coloring
             float w = fract(hit.x * material.freq + 
               pow(snoise(hit.xyz * material.noiseFreq),material.noiseExp)* material.noiseAmp);
 
-            vec3 color = mix(material.lightWoodColor, 
-              material.darkWoodColor, w);
-            fragmentColor.rgb += shade(normal, lightDir, powerDensity, color);
+            vec3 color = mix(material.lightWoodColor, material.darkWoodColor, w);
+            fragmentColor.rgb += shadeDiffuse(normal, lightDir, powerDensity, color);
           }
         }
       }

@@ -37,6 +37,8 @@ class Scene extends UniformProvider {
     this.traceMaterial.noiseFreq = 25;
     this.traceMaterial.noiseExp = 3;
     this.traceMaterial.noiseAmp = 20;
+    this.traceMaterial.specularColor = new Vec3(1.0, 1.0, 1.0);
+    this.traceMaterial.shininess = 10.0;
 
     this.traceMesh = new Mesh(this.traceMaterial, this.texturedQuadGeometry);
 
