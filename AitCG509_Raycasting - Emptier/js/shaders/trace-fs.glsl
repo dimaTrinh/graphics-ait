@@ -17,7 +17,12 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
   uniform struct{
     mat4 surface;
     mat4 clipper;
-  }clippedQuadrics[16];
+  } clippedQuadrics[16];
+
+  uniform struct {
+    vec4 position;
+    vec3 powerDensity;
+  } lights[8];
 
   float intersectQuadric(mat4 A, mat4 B, vec4 e, vec4 d){
     float a = dot(d*A, d);
@@ -45,7 +50,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   bool findBestHit(vec4 e, vec4 d, out float bestT, out int bestIndex){
     bestT = 9000.1;
-    for (int i = 1; i < 3; i++){
+    for (int i = 0; i < 4; i++){
       float t = intersectQuadric(clippedQuadrics[i].surface, 
         clippedQuadrics[i].clipper, e, d);
       if (t > 0.0 && t < bestT){
@@ -58,12 +63,20 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
     return true;
   }
 
+  vec3 shade(vec3 normal, vec3 lightDir, vec3 powerDensity, vec3 materialColor) {
+    float cosa =
+      clamp( dot(lightDir, normal),0.0,1.0);
+    return
+      powerDensity * materialColor * cosa;
+  }
+
   void main(void) {
 	  vec4 e = vec4(camera.position, 1);		 //< ray origin
   	vec4 d = vec4(normalize(rayDir).xyz, 0); //< ray direction
 
     float t;
     int index;
+
     bool hitFound = findBestHit(e, d, t, index);
 
     if (!hitFound){
@@ -77,7 +90,26 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
       if (dot(normal, d.xyz) > 0.0){
         normal = -normal;
       }
-      fragmentColor.rgb = normal;
+
+      for (int i = 0; i < 1; i++){
+        //Shadow stuff
+        vec4 shadowOrigin = hit + 0.01 * vec4(normal, 1);
+        vec4 shadowDirection = vec4(lights[i].position.xyz, 0);
+        float bestShadowT;
+        int bestShadowIndex;
+        bool shadowRayHitSomething = findBestHit(shadowOrigin, shadowDirection, 
+          bestShadowT, bestShadowIndex);
+
+        vec3 lightDir = lights[i].position.xyz;
+        vec3 powerDensity = lights[i].powerDensity;
+        vec4 lightDiff = vec4(lights[i].position.xyz,1) - hit;
+
+        if(!shadowRayHitSomething || 
+          bestShadowT * lights[i].position.w > sqrt(dot(lightDiff, lightDiff)) ) {
+          // add light source contribution
+          fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
+        }
+      }
     }
     
   }

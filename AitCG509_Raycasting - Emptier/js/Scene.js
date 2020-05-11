@@ -60,19 +60,32 @@ class Scene extends UniformProvider {
     this.clippedQuadrics = [];
     this.clippedQuadrics.push(
       new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
-    this.clippedQuadrics[0].makeUnitCylinder();
+    this.clippedQuadrics[0].makeKing();
+    this.clippedQuadrics[0].transform(new Mat4().set().scale(0.8, 1.5, 0.8).translate(new Vec3(-2.0, 0, -2.0)));
 
     this.clippedQuadrics.push(
       new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
     this.clippedQuadrics[1].makeUnitSphere();
-    this.clippedQuadrics[1].transform(new Mat4().set().translate(new Vec3(2.0, 2.5, 0.0)));
+    this.clippedQuadrics[1].transform(new Mat4().set().translate(new Vec3(5.0, 4.5, 0.0)));
 
     this.clippedQuadrics.push(
       new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
     this.clippedQuadrics[2].makePawn();
     this.clippedQuadrics[2].transformClipper(new Mat4().set().translate(new Vec3(0, -1, 0.0)));
-    this.clippedQuadrics[2].transform(new Mat4().set().scale(1.5, 2.0, 2.0).translate(new Vec3(2.0, 2.0, 0.0)));
+    this.clippedQuadrics[2].transform(new Mat4().set().scale(1.5, 2.0, 2.0).translate(new Vec3(5.0, 4.0, 0.0)));
     this.addComponentsAndGatherUniforms(...this.programs);
+
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[3].makeCrown();
+    this.clippedQuadrics[3].transform(new Mat4().set().scale(1.2, 0.8, 1.2).translate(new Vec3(-2.0, 1.5, -2.0)));
+
+    this.addComponentsAndGatherUniforms(...this.programs);
+
+    this.lights = [];
+    this.lights.push(new Light(this.lights.length, ...this.programs));
+    this.lights[0].position.set(1, 1, 1, 0).normalize();
+    this.lights[0].powerDensity.set(1, 1, 1);
 
     gl.enable(gl.DEPTH_TEST);
   }
@@ -98,6 +111,6 @@ class Scene extends UniformProvider {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     this.camera.move(dt, keysPressed);
-		this.traceQuad.draw(this, this.camera, ...this.clippedQuadrics);
+		this.traceQuad.draw(this, this.camera, ... this.lights, ...this.clippedQuadrics);
   }
 }

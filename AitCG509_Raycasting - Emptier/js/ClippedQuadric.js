@@ -43,6 +43,26 @@ class ClippedQuadric extends UniformProvider {
                      0,  0,  1,  0,
                      0,  0,  0,  -1);
   }
+  makeKing(){
+    this.surface.set(1,  0,  0,  0,
+                     0,  -1,  0,  0,
+                     0,  0,  1,  0,
+                     0,  0,  0,  -1);
+    this.clipper.set(0,  0,  0,  0,
+                     0,  1,  0,  0,
+                     0,  0,  0,  0,
+                     0,  0,  0,  -1);
+  }
+  makeCrown(){
+    this.surface.set(1,  0,  0,  0,
+                     0,  0,  0,  0,
+                     0,  0,  1,  0,
+                     0,  -1,  0,  0);
+    this.clipper.set(0,  0,  0,  0,
+                     0,  1,  0,  0,
+                     0,  0,  0,  0,
+                     0,  0,  0,  -1);
+  }
   transform(T){
     const invT = new Mat4(T).invert();
     const transT = new Mat4(T).invert().transpose();

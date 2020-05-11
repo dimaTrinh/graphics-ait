@@ -3,3 +3,6 @@ Completed Features:
 - Environment
 2. Quadrics
 - Pawns
+- King
+3. Lighting
+- Sun??
