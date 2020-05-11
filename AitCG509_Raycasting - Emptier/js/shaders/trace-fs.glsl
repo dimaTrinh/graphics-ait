@@ -80,7 +80,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   bool findBestHit(vec4 e, vec4 d, out float bestT, out int bestIndex){
     bestT = 9000.1;
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < 9; i++){
       float t = intersectQuadric(clippedQuadrics[i].surface, 
           clippedQuadrics[i].clipper, e, d);
       if (i == 7){ //bishop head
@@ -99,7 +99,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   vec3 shade(vec3 normal, vec3 lightDir, vec3 powerDensity, vec3 materialColor) {
     float cosa =
-      clamp( dot(lightDir, normal),0.0,1.0);
+      clamp(dot(lightDir, normal),0.0,1.0);
     return
       powerDensity * materialColor * cosa;
   }
@@ -136,46 +136,35 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
         normal = -normal;
       }
 
-      for (int i = 0; i < 2; i++){
-        //Shadow stuff
-        // vec4 shadowOrigin = hit + 0.01 * vec4(normal, 1);
-        // vec4 shadowDirection = vec4(lights[i].position.xyz, 0);
-
-        // float bestShadowT;
-        // int bestShadowIndex;
-        // bool shadowRayHitSomething = findBestHit(shadowOrigin, shadowDirection, 
-        //   bestShadowT, bestShadowIndex);
-
+      for (int i = 0; i < 2; i++){    
         vec3 lightDiff = lights[i].position.xyz - hit.xyz * lights[i].position.w;
         vec3 lightDir = normalize(lightDiff);
         float distanceSquared = dot(lightDiff, lightDiff);
         vec3 powerDensity = lights[i].powerDensity/distanceSquared;
 
-        // if(!shadowRayHitSomething || 
-        //   bestShadowT * lights[i].position.w > sqrt(dot(lightDiff, lightDiff)) ) {
-        //   // add light source contribution
-        //   if (index == 4 || index == 5){ //shading by its normal
-        //   fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
-        //   }
-        //   else{ //Procedural wood coloring
-        //     float w = fract(hit.x * material.freq + 
-        //       pow(snoise(hit.xyz * material.noiseFreq),material.noiseExp)* material.noiseAmp);
+        // Shadow stuff 
+        vec4 shadowOrigin = hit + 0.01 * vec4(normal, 0);
+        vec4 shadowDirection = vec4(lightDir, 0);
 
-        //     vec3 color = mix(material.lightWoodColor, 
-        //       material.darkWoodColor, w);
-        //     fragmentColor.rgb += shade(normal, lightDir, powerDensity, color);
-        //   }
-        // }
-        if (index == 4 || index == 5){ //shading by its normal
-          fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
-        }
-        else{ //Procedural wood coloring
-          float w = fract(hit.x * material.freq + 
-            pow(snoise(hit.xyz * material.noiseFreq),material.noiseExp)* material.noiseAmp);
+        float bestShadowT;
+        int bestShadowIndex;
+        bool shadowRayHitSomething = findBestHit(shadowOrigin, shadowDirection, 
+          bestShadowT, bestShadowIndex);
 
-          vec3 color = mix(material.lightWoodColor, 
-            material.darkWoodColor, w);
-          fragmentColor.rgb += shade(normal, lightDir, powerDensity, color);
+        if(!shadowRayHitSomething || 
+          bestShadowT * lights[i].position.w > sqrt(dot(lightDiff, lightDiff)) ) {
+          // add light source contribution
+          if (index == 4 || index == 5){ //shading by its normal
+            fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
+          }
+          else{ //Procedural wood coloring
+            float w = fract(hit.x * material.freq + 
+              pow(snoise(hit.xyz * material.noiseFreq),material.noiseExp)* material.noiseAmp);
+
+            vec3 color = mix(material.lightWoodColor, 
+              material.darkWoodColor, w);
+            fragmentColor.rgb += shade(normal, lightDir, powerDensity, color);
+          }
         }
       }
     }

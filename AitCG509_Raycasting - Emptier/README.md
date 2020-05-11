@@ -8,5 +8,6 @@ Completed Features:
 - Kings
 - Bishops
 3. Lighting
-- Sun??
-- Gloria (neon light above the King piece)??
+- Sun
+- Gloria (neon light above the King piece)
+- Ebony and Ivory

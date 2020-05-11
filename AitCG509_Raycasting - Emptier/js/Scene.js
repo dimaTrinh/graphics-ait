@@ -110,7 +110,14 @@ class Scene extends UniformProvider {
     this.clippedQuadrics[7].transform(new Mat4().set().scale(0.7, 1.5, 0.7).translate(new Vec3(1.5, 1.8, 5.0)));
     this.clippedQuadrics[7].transformClipper(new Mat4().set().scale(1.0, 0.5, 1.0).translate(new Vec3(0.0, 1.0, 0.0)));
 
-    this.addComponentsAndGatherUniforms(...this.programs);
+
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[8].makeBishopHole();
+    this.clippedQuadrics[8].transform(new Mat4().set().scale(0.82, 0.82, 0.67).translate(new Vec3(1.5, 1.85, 5.0)));
+    //this.clippedQuadrics[8].transformSurface(new Mat4().set().scale(1.0, 1.0, 1.0).translate(new Vec3(0.0, 1.0, 0.0)));
+    //this.clippedQuadrics[8].transform(new Mat4().set().scale(1.0, 0.5, 1.0).translate(new Vec3(0.0, 1.0, 0.0)));
+    //this.clippedQuadrics[8].transformClipper(new Mat4().set().scale(0.7, 1.5, 0.7).translate(new Vec3(1.5, 1.8, 5.0)));
 
     this.lights = [];
     this.lights.push(new Light(this.lights.length, ...this.programs));
@@ -118,8 +125,10 @@ class Scene extends UniformProvider {
     this.lights[0].powerDensity.set(1, 1, 1);
 
     this.lights.push(new Light(this.lights.length, ...this.programs));
-    this.lights[1].position.set(-2.0, 2.5, -2.0, 1).normalize(); //.mul(new Mat4().set().translate(new Vec3(-2.0, 2.0, -2.0))).normalize();
+    this.lights[1].position.set(-2.0, 2.5, -2.0, 1); 
     this.lights[1].powerDensity.set(0.8, 7, 0.6);
+
+    this.addComponentsAndGatherUniforms(...this.programs);
 
     gl.enable(gl.DEPTH_TEST);
   }

@@ -73,6 +73,16 @@ class ClippedQuadric extends UniformProvider {
                      0,  0,  0,  0,
                      0,  0,  0, -0.25);
   }
+  makeBishopHole(){
+    this.clipper.set(1,  0,  0,  0,
+                     0,  1,  0,  0,
+                     0,  0,  1,  0,
+                     0,  0,  0,  -1);
+    this.surface.set(1,  0,  0,  0,
+                     0,  1,  0,  0,
+                     0,  0,  0,  0,
+                     0,  0,  0, -0.25);
+  }
   transform(T){
     const invT = new Mat4(T).invert();
     const transT = new Mat4(T).invert().transpose();
