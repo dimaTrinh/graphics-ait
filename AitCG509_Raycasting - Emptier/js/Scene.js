@@ -69,7 +69,7 @@ class Scene extends UniformProvider {
     this.clippedQuadrics = [];
     this.clippedQuadrics.push(
       new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
-    this.clippedQuadrics[0].makeKing();
+    this.clippedQuadrics[0].makeChessBody();
     this.clippedQuadrics[0].transform(new Mat4().set().scale(0.8, 1.5, 0.8).translate(new Vec3(-2.0, 0, -2.0)));
 
     this.clippedQuadrics.push(
@@ -92,12 +92,23 @@ class Scene extends UniformProvider {
     this.clippedQuadrics.push(
       new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
     this.clippedQuadrics[4].makeUnitSphere();
-    this.clippedQuadrics[4].transform(new Mat4().set().translate(new Vec3(5.0, 0.0, 5.0)));
+    this.clippedQuadrics[4].transform(new Mat4().set().translate(new Vec3(7.0, 0.0, 5.0)));
 
     this.clippedQuadrics.push(
       new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
     this.clippedQuadrics[5].makeUnitCone();
     this.clippedQuadrics[5].transform(new Mat4().set().translate(new Vec3(-5.0, 0.0, 5.0)));
+
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[6].makeChessBody();
+    this.clippedQuadrics[6].transform(new Mat4().set().scale(0.8, 1.5, 0.8).translate(new Vec3(1.5, 0, 5.0)));
+
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[7].makeBishopHead();
+    this.clippedQuadrics[7].transform(new Mat4().set().scale(0.7, 1.5, 0.7).translate(new Vec3(1.5, 1.8, 5.0)));
+    this.clippedQuadrics[7].transformClipper(new Mat4().set().scale(1.0, 0.5, 1.0).translate(new Vec3(0.0, 1.0, 0.0)));
 
     this.addComponentsAndGatherUniforms(...this.programs);
 
@@ -135,9 +146,9 @@ class Scene extends UniformProvider {
 
     this.camera.move(dt, keysPressed);
 
-    this.clippedQuadrics[4].transform(new Mat4().set().translate(new Vec3(0.03*Math.cos(t)), 0.03*Math.sin(t), 0.0));
+    this.clippedQuadrics[4].transform(new Mat4().set().translate(new Vec3(0.0, 0.03*Math.sin(t), 0.03*Math.cos(t))));
     this.clippedQuadrics[5].transform(new Mat4().set().translate(new Vec3(0.006*(16*Math.pow(Math.sin(t),3)), 0.006*(13*Math.cos(t) - 5*Math.cos(2*t) 
-      - 2*Math.cos(3*t) - Math.cos(4*t)), 0.03*Math.sin(t))));
+      - 2*Math.cos(3*t) - Math.cos(4*t)), 0.04*Math.sin(t))));
 
     for(const gameObject of this.gameObjects) {
         gameObject.draw(this, this.camera, ...this.lights, ...this.clippedQuadrics);

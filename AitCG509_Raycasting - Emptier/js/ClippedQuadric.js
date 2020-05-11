@@ -43,7 +43,7 @@ class ClippedQuadric extends UniformProvider {
                      0,  0,  1,  0,
                      0,  0,  0,  -1);
   }
-  makeKing(){
+  makeChessBody(){
     this.surface.set(1,  0,  0,  0,
                      0,  -1,  0,  0,
                      0,  0,  1,  0,
@@ -63,6 +63,16 @@ class ClippedQuadric extends UniformProvider {
                      0,  0,  0,  0,
                      0,  0,  0,  -1);
   }
+  makeBishopHead(){
+    this.surface.set(1,  0,  0,  0,
+                     0,  1,  0,  0,
+                     0,  0,  1,  0,
+                     0,  0,  0,  -1);
+    this.clipper.set(1,  0,  0,  0,
+                     0,  1,  0,  0,
+                     0,  0,  0,  0,
+                     0,  0,  0, -0.25);
+  }
   transform(T){
     const invT = new Mat4(T).invert();
     const transT = new Mat4(T).invert().transpose();
@@ -73,5 +83,10 @@ class ClippedQuadric extends UniformProvider {
     const invT = new Mat4(T).invert();
     const transT = new Mat4(T).invert().transpose();
     this.clipper = this.clipper.premul(invT).mul(transT);
+  }
+  transformSurface(T){
+    const invT = new Mat4(T).invert();
+    const transT = new Mat4(T).invert().transpose();
+    this.surface = this.surface.premul(invT).mul(transT);
   }
 }

@@ -6,6 +6,7 @@ Completed Features:
 2. Quadrics
 - Pawns
 - Kings
+- Bishops
 3. Lighting
 - Sun??
 - Gloria (neon light above the King piece)??
