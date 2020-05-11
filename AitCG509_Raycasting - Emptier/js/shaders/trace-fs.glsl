@@ -6,6 +6,12 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   uniform struct {
   	samplerCube envTexture;
+    vec3 lightWoodColor;
+    vec3 darkWoodColor;
+    float freq;
+    float noiseFreq;
+    float noiseExp;
+    float noiseAmp;
   } material;
 
   uniform struct {
@@ -50,7 +56,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   bool findBestHit(vec4 e, vec4 d, out float bestT, out int bestIndex){
     bestT = 9000.1;
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 5; i++){
       float t = intersectQuadric(clippedQuadrics[i].surface, 
         clippedQuadrics[i].clipper, e, d);
       if (t > 0.0 && t < bestT){
@@ -68,6 +74,17 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
       clamp( dot(lightDir, normal),0.0,1.0);
     return
       powerDensity * materialColor * cosa;
+  }
+
+  float snoise(vec3 r) {
+    vec3 s = vec3(7502, 22777, 4767);
+    float f = 0.0;
+    for(int i=0; i<16; i++) {
+      f += sin( dot(s - vec3(32768, 32768, 32768), r)
+                                   / 65536.0);
+      s = mod(s, 32768.0) * 2.0 + floor(s / 32768.0);
+    }
+    return f / 32.0 + 0.5;
   }
 
   void main(void) {
@@ -91,23 +108,35 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
         normal = -normal;
       }
 
-      for (int i = 0; i < 1; i++){
+      for (int i = 0; i < 2; i++){
         //Shadow stuff
-        vec4 shadowOrigin = hit + 0.01 * vec4(normal, 1);
-        vec4 shadowDirection = vec4(lights[i].position.xyz, 0);
-        float bestShadowT;
-        int bestShadowIndex;
-        bool shadowRayHitSomething = findBestHit(shadowOrigin, shadowDirection, 
-          bestShadowT, bestShadowIndex);
+        // vec4 shadowOrigin = hit + 0.01 * vec4(normal, 1);
+        // vec4 shadowDirection = vec4(lights[i].position.xyz, 0);
+
+        // float bestShadowT;
+        // int bestShadowIndex;
+        // bool shadowRayHitSomething = findBestHit(shadowOrigin, shadowDirection, 
+        //   bestShadowT, bestShadowIndex);
 
         vec3 lightDir = lights[i].position.xyz;
         vec3 powerDensity = lights[i].powerDensity;
         vec4 lightDiff = vec4(lights[i].position.xyz,1) - hit;
 
-        if(!shadowRayHitSomething || 
-          bestShadowT * lights[i].position.w > sqrt(dot(lightDiff, lightDiff)) ) {
-          // add light source contribution
+        // if(!shadowRayHitSomething || 
+        //   bestShadowT * lights[i].position.w > sqrt(dot(lightDiff, lightDiff)) ) {
+        //   // add light source contribution
+        //   fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
+        // }
+        if (index == 4){ //shading by its normal
           fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
+        }
+        else{ //Procedural wood coloring
+          float w = fract(hit.x * material.freq + 
+            pow(snoise(hit.xyz * material.noiseFreq),material.noiseExp)* material.noiseAmp);
+
+          vec3 color = mix(material.lightWoodColor, 
+            material.darkWoodColor, w);
+          fragmentColor.rgb += shade(normal, lightDir, powerDensity, color);
         }
       }
     }

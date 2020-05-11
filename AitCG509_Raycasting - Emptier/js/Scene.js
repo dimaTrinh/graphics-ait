@@ -8,7 +8,7 @@ class Scene extends UniformProvider {
     this.vsQuad = new Shader(gl, gl.VERTEX_SHADER, "quad-vs.glsl");    
     this.fsTrace = new Shader(gl, gl.FRAGMENT_SHADER, "trace-fs.glsl");
     this.fsTextured = new Shader(gl, gl.FRAGMENT_SHADER, "textured-fs.glsl");
-    this.vsTextured = new Shader(gl, gl.VERTEX_SHADER, "textured-vs.glsl");  
+    this.vsTextured = new Shader(gl, gl.VERTEX_SHADER, "textured-vs.glsl");
     this.programs.push( 
     	this.traceProgram = new TexturedProgram(gl, this.vsQuad, this.fsTrace));
     this.programs.push( 
@@ -20,6 +20,7 @@ class Scene extends UniformProvider {
     this.timeAtLastFrame = this.timeAtFirstFrame;
 
     this.traceMaterial = new Material(this.traceProgram);
+
     this.envTexture = new TextureCube(gl, [
       "media/posx512.jpg",
       "media/negx512.jpg",
@@ -30,6 +31,13 @@ class Scene extends UniformProvider {
       );
 
     this.traceMaterial.envTexture.set(this.envTexture);
+    this.traceMaterial.lightWoodColor.set(new Vec3(0.0, 0.0, 0.0));
+    this.traceMaterial.darkWoodColor.set(new Vec3(210/255, 105/255, 30/255));
+    this.traceMaterial.freq = 15;
+    this.traceMaterial.noiseFreq = 25;
+    this.traceMaterial.noiseExp = 3;
+    this.traceMaterial.noiseAmp = 20;
+
     this.traceMesh = new Mesh(this.traceMaterial, this.texturedQuadGeometry);
 
     this.traceQuad = new GameObject(this.traceMesh);
@@ -38,23 +46,24 @@ class Scene extends UniformProvider {
     this.camera.position.set(0, 5, 25);
     this.camera.update();
 
-    this.slowpokeMaterial = new Material(this.texturedProgram);
-    this.slowpokeMaterial.colorTexture.set(new Texture2D(gl, 
-        "./media/slowpoke/YadonDh.png"));
+    // this.slowpokeMaterial = new Material(this.texturedProgram);
+    // this.slowpokeMaterial.colorTexture.set(new Texture2D(gl, 
+    //     "./media/slowpoke/YadonDh.png"));
 
-    this.slowpokeEyeMaterial = new Material(this.texturedProgram);
-    this.slowpokeEyeMaterial.colorTexture.set(new Texture2D(gl, 
-        "./media/slowpoke/YadonEyeDh.png"));
+    // this.slowpokeEyeMaterial = new Material(this.texturedProgram);
+    // this.slowpokeEyeMaterial.colorTexture.set(new Texture2D(gl, 
+    //     "./media/slowpoke/YadonEyeDh.png"));
 
-    this.slowpokeMesh = new MultiMesh(gl, 
-        "./media/slowpoke/slowpoke.json", 
-        [this.slowpokeMaterial, this.slowpokeEyeMaterial]);
+    // this.slowpokeMesh = new MultiMesh(gl, 
+    //     "./media/slowpoke/slowpoke.json", 
+    //     [this.slowpokeMaterial, this.slowpokeEyeMaterial]);
 
-    this.avatar = new GameObject(this.slowpokeMesh);
-    this.avatar.scale.set(0.3, 0.3, 0.3);
-    this.avatar.yaw = 1.5;
+    // this.avatar = new GameObject(this.slowpokeMesh);
+    // this.avatar.scale.set(0.3, 0.3, 0.3);
+    // this.avatar.yaw = 1.5;
 
     this.gameObjects = [];
+    this.gameObjects.push(this.traceQuad);
     //this.gameObjects.push(this.avatar);
 
     this.clippedQuadrics = [];
@@ -80,12 +89,21 @@ class Scene extends UniformProvider {
     this.clippedQuadrics[3].makeCrown();
     this.clippedQuadrics[3].transform(new Mat4().set().scale(1.2, 0.8, 1.2).translate(new Vec3(-2.0, 1.5, -2.0)));
 
+    this.clippedQuadrics.push(
+      new ClippedQuadric(this.clippedQuadrics.length, ...this.programs));
+    this.clippedQuadrics[4].makeUnitSphere();
+    this.clippedQuadrics[4].transform(new Mat4().set().translate(new Vec3(5.0, 0.0, 5.0)));
+
     this.addComponentsAndGatherUniforms(...this.programs);
 
     this.lights = [];
     this.lights.push(new Light(this.lights.length, ...this.programs));
     this.lights[0].position.set(1, 1, 1, 0).normalize();
     this.lights[0].powerDensity.set(1, 1, 1);
+
+    this.lights.push(new Light(this.lights.length, ...this.programs));
+    this.lights[1].position.set(-2.0, 2.5, -2.0, 1).normalize(); //.mul(new Mat4().set().translate(new Vec3(-2.0, 2.0, -2.0))).normalize();
+    this.lights[1].powerDensity.set(0.8, 7, 0.6);
 
     gl.enable(gl.DEPTH_TEST);
   }
@@ -111,6 +129,8 @@ class Scene extends UniformProvider {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     this.camera.move(dt, keysPressed);
-		this.traceQuad.draw(this, this.camera, ... this.lights, ...this.clippedQuadrics);
+    for(const gameObject of this.gameObjects) {
+        gameObject.draw(this, this.camera, ...this.lights, ...this.clippedQuadrics);
+    }
   }
 }
