@@ -56,7 +56,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
 
   bool findBestHit(vec4 e, vec4 d, out float bestT, out int bestIndex){
     bestT = 9000.1;
-    for (int i = 0; i < 5; i++){
+    for (int i = 0; i < 6; i++){
       float t = intersectQuadric(clippedQuadrics[i].surface, 
         clippedQuadrics[i].clipper, e, d);
       if (t > 0.0 && t < bestT){
@@ -127,7 +127,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `#version 30
         //   // add light source contribution
         //   fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
         // }
-        if (index == 4){ //shading by its normal
+        if (index == 4 || index == 5){ //shading by its normal
           fragmentColor.rgb += shade(normal, lightDir, powerDensity, normal);
         }
         else{ //Procedural wood coloring

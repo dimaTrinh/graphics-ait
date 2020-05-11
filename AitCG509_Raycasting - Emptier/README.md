@@ -2,6 +2,7 @@ Completed Features:
 1. Misc
 - Environment
 - Wood 
+- Animation
 2. Quadrics
 - Pawns
 - Kings
